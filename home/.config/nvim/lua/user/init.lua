@@ -1,4 +1,3 @@
-local status_ok, telescope = pcall(require, "telescope")
 local telescope_actions = require "telescope.actions"
 -- Global color scheme pre-configs
 vim.g.tokyonight_style = "storm"
@@ -74,7 +73,7 @@ local config = {
         },
         mappings = {
           i = {
-            ["<C-q>"] = require("telescope.actions").send_selected_to_qflist + telescope_actions.open_qflist,
+            ["<C-q>"] = telescope_actions.send_selected_to_qflist + telescope_actions.open_qflist,
           },
         },
       },
@@ -108,10 +107,12 @@ local config = {
     -- Add bindings to the normal mode <leader> mappings
     register_n_leader = {
       s = { 
+        -- Quick telescope.live_grep search from whats in the buffer search register
         ["."] = { 
                   [[:lua require('telescope.builtin').live_grep({default_text=string.gsub(string.gsub(vim.fn.getreg('/'), '\\<', ''), '\\>', '')})<CR>]],
                   "Global search for /"
                 },
+        -- Resume last telescope search
         ["s"] = {":lua require('telescope.builtin').resume()<CR>", "Resume search"}
       }
       -- ["N"] = { "<cmd>tabnew<cr>", "New Buffer" },
@@ -215,7 +216,7 @@ local config = {
     set.clipboard = nil
     -- Set key bindings
     map("n", "<C-s>", ":w!<CR>")
-    map("v", "*", "\"xy/<C-R>x<CR>")
+    map("v", "*", "\"xy/<C-R>x<CR>") -- Remap * to search for selection when in visual mode, how is this not default behavior ?!
 
     -- Set autocommands
     vim.api.nvim_create_augroup("packer_conf", {})
