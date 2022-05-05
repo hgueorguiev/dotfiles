@@ -1,4 +1,5 @@
 local telescope_actions = require "telescope.actions"
+
 -- Global color scheme pre-configs
 vim.g.tokyonight_style = "storm"
 -- Global color scheme pre-configs END
@@ -54,7 +55,10 @@ local config = {
     init = {
       { "folke/tokyonight.nvim" },
       { "tpope/vim-surround" },
-      -- { "andweeb/presence.nvim" },
+      {
+        "justinmk/vim-sneak",
+      },
+      -- { "andweebopresence.nvim" },
       -- {
       --   "ray-x/lsp_signature.nvim",
       --   event = "BufRead",
@@ -190,8 +194,14 @@ local config = {
       sources = {
         -- Set a formatter
         formatting.rufo,
+        formatting.yapf.with({
+          args = {"--style", vim.fn.expand('~/code/catalant/catalant/setup.cfg')}
+        }),
         -- Set a linter
         diagnostics.rubocop,
+        diagnostics.flake8.with({
+          extra_args = {"--config", vim.fn.expand('~/code/catalant/catalant/setup.cfg')}
+        }),
       },
       -- NOTE: You can remove this on attach function to disable format on save
       on_attach = function(client)
@@ -212,8 +222,12 @@ local config = {
     local map = vim.keymap.set
     local set = vim.opt
     -- Set options
+    set.guicursor=[[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait10-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait10-blinkoff150-blinkon175]]
     set.relativenumber = true
     set.clipboard = nil
+    -- Set plugins global opts
+    vim.g["sneak#label"] = true
+    vim.g["sneak#prompt"] = '🔎'
     -- Set key bindings
     map("n", "<C-s>", ":w!<CR>")
     map("v", "*", "\"xy/<C-R>x<CR>") -- Remap * to search for selection when in visual mode, how is this not default behavior ?!
@@ -226,7 +240,6 @@ local config = {
       pattern = "plugins.lua",
       command = "source <afile> | PackerSync",
     })
-
     -- Set up custom filetypes
     -- vim.filetype.add {
     --   extension = {
