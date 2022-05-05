@@ -55,9 +55,8 @@ local config = {
     init = {
       { "folke/tokyonight.nvim" },
       { "tpope/vim-surround" },
-      {
-        "justinmk/vim-sneak",
-      },
+      { "justinmk/vim-sneak" },
+      { "bkad/CamelCaseMotion" },
       -- { "andweebopresence.nvim" },
       -- {
       --   "ray-x/lsp_signature.nvim",
@@ -225,9 +224,11 @@ local config = {
     set.guicursor=[[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait10-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait10-blinkoff150-blinkon175]]
     set.relativenumber = true
     set.clipboard = nil
+    set.colorcolumn = "120"
     -- Set plugins global opts
     vim.g["sneak#label"] = true
-    vim.g["sneak#prompt"] = '🔎'
+    vim.g["sneak#prompt"] = "🔎"
+    vim.g["camelcasemotion_key"] = "<leader><leader>"
     -- Set key bindings
     map("n", "<C-s>", ":w!<CR>")
     map("v", "*", "\"xy/<C-R>x<CR>") -- Remap * to search for selection when in visual mode, how is this not default behavior ?!
