@@ -1,4 +1,5 @@
-local telescope_actions = require "telescope.actions"
+local telescope_actions = require("telescope.actions")
+local gps = require("nvim-gps")
 
 local config = {
 
@@ -47,6 +48,7 @@ local config = {
 
   -- Configure plugins
   plugins = {
+    
     -- Add plugins, the packer syntax without the "use"
     init = {
       -- Themes 
@@ -74,6 +76,13 @@ local config = {
       { "tpope/vim-surround" },
       { "justinmk/vim-sneak" },
       { "bkad/CamelCaseMotion" },
+      {
+	      "SmiteshP/nvim-gps",
+	      requires = "nvim-treesitter/nvim-treesitter",
+	      config = function()
+           require("nvim-gps").setup()
+        end,
+      },
       -- { "andweebopresence.nvim" },
       -- {
       --   "ray-x/lsp_signature.nvim",
@@ -107,11 +116,28 @@ local config = {
     packer = {
       compile_path = vim.fn.stdpath "config" .. "/lua/packer_compiled.lua",
     },
-    lualine = {
-      options = {
-        theme = "duskfox"
+    lualine = function(dt)
+      local my_section = {
+			  gps.get_location,
+			  cond = gps.is_available
       }
-    }
+      dt["options"]["theme"] = "duskfox"
+      table.insert(dt["sections"]["lualine_c"], 3, my_section)
+      return dt
+    end,
+    -- {
+    --   sections = {
+			 --  lualine_c = {
+			 --    {
+			 --      gps.get_location,
+			 --      cond = gps.is_available
+			 --    }
+		-- },
+	   --  },
+    --   options = {
+    --     theme = "duskfox"
+    --   }
+    -- }
   },
   -- Add paths for including more VS Code style snippets in luasnip
   luasnip = {
