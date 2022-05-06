@@ -116,6 +116,7 @@ history_search() {
   print -z '!'$pt
 }
 
+alias godev='cd ~/code/catalant && tmux new-session -d && tmux source ~/.tmux-dev-session && tmux attach'
 alias reindex='ct rebuild_search_index'
 alias stat='git status'
 alias gitd='git diff'

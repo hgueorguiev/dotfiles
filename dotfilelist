@@ -2,3 +2,5 @@
 ~/.zshrc
 ~/.zprofile
 ~/.zshenv
+~/.tmux.conf
+~/.tmux-dev-session

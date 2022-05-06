@@ -1,17 +1,13 @@
 local telescope_actions = require "telescope.actions"
 
--- Global color scheme pre-configs
-vim.g.tokyonight_style = "storm"
--- Global color scheme pre-configs END
-
 local config = {
 
   -- Set colorscheme
-  colorscheme = "tokyonight",
+  colorscheme = "duskfox",
 
   -- Default theme configuration
   default_theme = {
-    diagnostics_style = { italic = true },
+    diagnostics_style = { italic = true, bold = true },
     -- Modify the color table
     colors = {
       fg = "#abb2bf",
@@ -53,7 +49,28 @@ local config = {
   plugins = {
     -- Add plugins, the packer syntax without the "use"
     init = {
-      { "folke/tokyonight.nvim" },
+      -- Themes 
+      { "folke/tokyonight.nvim",
+        config = function()
+          -- vim.g.tokyonight_style = "storm"
+          -- vim.cmd "colorscheme tokyonight"
+        end,
+      },
+      { "EdenEast/nightfox.nvim",
+        config = function()
+          require("nightfox").setup({
+            options = {
+              dim_inactive = true,
+              styles = {
+                comments = "italic",
+              },
+            }
+          })
+
+          vim.cmd "colorscheme duskfox"
+        end,
+      },
+      -- --
       { "tpope/vim-surround" },
       { "justinmk/vim-sneak" },
       { "bkad/CamelCaseMotion" },
@@ -76,7 +93,7 @@ local config = {
         },
         mappings = {
           i = {
-            ["<C-q>"] = telescope_actions.send_selected_to_qflist + telescope_actions.open_qflist,
+            -- ["<C-1>"] = telescope_actions.send_selected_to_qflist + telescope_actions.open_qflist,
           },
         },
       },
@@ -90,16 +107,12 @@ local config = {
     packer = {
       compile_path = vim.fn.stdpath "config" .. "/lua/packer_compiled.lua",
     },
-    vim_surround = {
-      keys = {"c", "d", "y"}
-    },
     lualine = {
       options = {
-        theme = "tokyonight"
+        theme = "duskfox"
       }
     }
   },
-
   -- Add paths for including more VS Code style snippets in luasnip
   luasnip = {
     vscode_snippet_paths = {},
