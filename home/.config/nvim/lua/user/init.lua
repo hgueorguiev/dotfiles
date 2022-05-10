@@ -122,6 +122,8 @@ local config = {
 			  cond = gps.is_available
       }
       dt["options"]["theme"] = "duskfox"
+      dt["options"]["component_separators"] = { left="   ", right="   "}
+      -- dt["sections"]["lualine_y"] = { "filename" }
       table.insert(dt["sections"]["lualine_c"], 3, my_section)
       return dt
     end,
@@ -264,6 +266,9 @@ local config = {
     set.relativenumber = true
     set.clipboard = nil
     set.colorcolumn = "120"
+    set.spelllang="en"
+    set.spellsuggest="best,15"
+    set.spell = true
     -- Set plugins global opts
     vim.g["sneak#label"] = true
     vim.g["sneak#prompt"] = "🔎"
