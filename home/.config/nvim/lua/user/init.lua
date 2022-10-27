@@ -1,5 +1,32 @@
 local telescope_actions = require("telescope.actions")
-local gps = require("nvim-gps")
+local return_code, gps = pcall(require, "nvim-gps")
+
+local telescope_grep_in_blob = function(glob_pattern)
+  require('telescope.builtin').live_grep({glob_pattern=glob_pattern})
+end
+
+local grep_in_blob = function()
+
+  local process_glob = function(glob_string)
+    print("Searching in globs: ", glob_string)
+    
+    local glob_patterns = {}
+    for w in glob_string:gmatch("([^,]+)") do 
+      print('P: "', w,'"') 
+      table.insert(glob_patterns, w) 
+    end
+    
+    telescope_grep_in_blob(glob_patterns)
+  end
+  
+  vim.ui.input({
+   prompt = "Search in glob:",
+   completrion = "file",
+   default = "**/*."
+  },
+  process_glob)
+end
+
 
 local config = {
 
@@ -35,7 +62,6 @@ local config = {
     indent_blankline = true,
     dashboard = true,
     which_key = true,
-    neoscroll = true,
     ts_rainbow = true,
     ts_autotag = true,
   },
@@ -44,6 +70,24 @@ local config = {
   ui = {
     nui_input = true,
     telescope_select = true,
+  },
+
+  mappings = {
+    n = {
+      -- Quick telescope.live_grep search from whats in the buffer search register
+      ["<leader>s."] = { 
+        [[<CMD>lua require('telescope.builtin').live_grep({default_text=string.gsub(string.gsub(vim.fn.getreg('/'), '\\<', ''), '\\>', '')})<CR>]],
+        desc = "Global search for /"
+      },
+      -- Resume last telescope search
+      ["<leader>ss"] = {"<cmd>lua require('telescope.builtin').resume()<cr>", desc = "resume search"},
+      -- Telescope.live_grep only specified files
+      ["<leader>sf"] = { 
+        grep_in_blob
+       ,
+        desc = "Global search for /"
+      },
+    },
   },
 
   -- Configure plugins
@@ -104,6 +148,9 @@ local config = {
           i = {
             -- ["<C-1>"] = telescope_actions.send_selected_to_qflist + telescope_actions.open_qflist,
           },
+          n = {
+
+          },
         },
       },
     },
@@ -127,19 +174,6 @@ local config = {
       table.insert(dt["sections"]["lualine_c"], 3, my_section)
       return dt
     end,
-    -- {
-    --   sections = {
-			 --  lualine_c = {
-			 --    {
-			 --      gps.get_location,
-			 --      cond = gps.is_available
-			 --    }
-		-- },
-	   --  },
-    --   options = {
-    --     theme = "duskfox"
-    --   }
-    -- }
   },
   -- Add paths for including more VS Code style snippets in luasnip
   luasnip = {
@@ -148,19 +182,17 @@ local config = {
 
   -- Modify which-key registration
   ["which-key"] = {
-    -- Add bindings to the normal mode <leader> mappings
-    register_n_leader = {
-      s = { 
-        -- Quick telescope.live_grep search from whats in the buffer search register
-        ["."] = { 
-                  [[:lua require('telescope.builtin').live_grep({default_text=string.gsub(string.gsub(vim.fn.getreg('/'), '\\<', ''), '\\>', '')})<CR>]],
-                  "Global search for /"
-                },
-        -- Resume last telescope search
-        ["s"] = {":lua require('telescope.builtin').resume()<CR>", "Resume search"}
-      }
-      -- ["N"] = { "<cmd>tabnew<cr>", "New Buffer" },
-    },
+    -- register = {
+    --   -- first key is the mode, n == normal mode
+    --   n = {
+    --     -- second key is the prefix, <leader> prefixes
+    --     ["<leader>"] = {
+    --       -- third key is the key to bring up next level and its displayed
+    --       -- group name in which-key top level menu
+    --       ["b"] = { name = "Buffer" },
+    --     },
+    --   },
+    -- },
   },
 
   -- CMP Source Priorities
