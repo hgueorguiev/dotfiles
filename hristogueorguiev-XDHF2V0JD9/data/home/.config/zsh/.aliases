@@ -1,0 +1,61 @@
+# Default tools by file extension
+## VIM associatins
+alias -s txt=vim
+alias -s py=vim
+alias -s html=vim
+alias -s js=vim
+alias -s rs=vim
+alias -s c=vim
+alias -s cpp=vim
+alias -s h=vim
+alias -s yml=vim
+alias -s yaml=vim
+alias -s toml=vim
+
+# List command
+alias ls="lsd -lh"
+alias la="lsd -alh"
+
+# Chage director command
+alias d="dirs -v"
+
+# Fix history
+alias history="history 0"
+
+# DOS throwbacks
+alias cls=clear
+alias rd=rmdir
+alias md=mkdir
+
+# GIT
+alias gd="git diff"
+alias gs="git status"
+
+# Power CAT
+alias cat=bat
+
+# VIM
+alias vi-classic=/usr/bin/vi
+alias vim=nvim
+alias vi=vim
+
+# Edit configs
+function edcfg() {
+  typeset -A config_types
+  config_types=(
+    'shell' '-s'
+    'editor' '-e'
+  )
+
+  if [[ $1 == $config_types[shell] ]] ; then
+    vi "$HOME/.config/zsh/.zshrc" "$HOME/.zprofile" "$HOME/.config/zsh/.aliases"
+    return
+  fi
+
+  if [[ $1 == $config_types[editor] ]] ; then
+    vi "$HOME/.config/nvim/init.lua" "$HOME/.config/nvim/lua/user/utils.lua" 
+    return
+  fi
+
+  echo "Select config to edit:\n-s for shell configs\n-e for editor configs"
+}
