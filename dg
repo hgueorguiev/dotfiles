@@ -6,17 +6,27 @@ import socket
 import shutil
 
 TERM_WIDTH, _ = os.get_terminal_size()
+CMD_NAME = 'dg'
 DATA_DIR = 'data'
 TEMP_BACK_DIR = 'temp_backup'
 HOME_DIR = 'home'
 GATHER_LIST_NAME = 'dotfilelist'
 DESCRIPTION = 'Collects a list of dot file (or other config) in a git repo.\nOrganized by hostname.'
 
+
 class GatherException(Exception):
     pass
 
 def process_arguments():
     parser = argparse.ArgumentParser(description=DESCRIPTION)
+
+    if parser.prog != CMD_NAME:
+        parser.add_argument('--build',
+                            help='Copy source to runnable script to "release" updated version.',
+                            action='store_const',
+                            const=build,
+                            dest='command')
+    
     parser.add_argument('--setup',
                         help='Setup a dotgather directory for a specific machine.',
                         action='store_const',
@@ -49,6 +59,12 @@ def process_arguments():
 
     args = parser.parse_args()
     return args, parser.prog
+
+def build(_):
+    shutil.copy(__file__, os.path.join('..', CMD_NAME))
+    print('🍾🙌👯‍♀️')
+
+    
 
 def setup(directory):
     if os.path.exists(directory):
