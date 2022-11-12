@@ -2,6 +2,9 @@ echo "Shell init ..."
 # Enable vi mode
 bindkey -v
 
+## jk to esc  
+bindkey -M viins 'jk' vi-cmd-mode
+
 # Shell PATH
 export PATH=$HOME/.local/bin:$PATH   # Add usr utils path
 export PATH="$HOME/.pyenv/bin:$PATH" # Add PyEnv path
@@ -47,7 +50,8 @@ bindkey -v '^?' backward-delete-char
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' enable git
 zstyle ':vcs_info:*' unstagedstr '%F{red}%f'
-zstyle ':vcs_info:*' stagedstr '%F{green}%f' zstyle ':vcs_info:*' cleanstr '%F{blue}%f'
+zstyle ':vcs_info:*' stagedstr '%F{green}%f' 
+zstyle ':vcs_info:*' cleanstr '%F{blue}%f'
 zstyle ':vcs_info:git*' formats "%F{203}%f%F{209}%b%f %F{215}%f %F{221}[%f %m%u%c %F{221}]%f%F{203}%f"
 zstyle ':vcs_info:*' check-for-changes true
 
