@@ -154,6 +154,11 @@ _G.packer_plugins = {
     path = "/Users/hristogueorguiev/.local/share/nvim/site/pack/packer/start/nvim-gps",
     url = "https://github.com/SmiteshP/nvim-gps"
   },
+  ["nvim-rg"] = {
+    loaded = true,
+    path = "/Users/hristogueorguiev/.local/share/nvim/site/pack/packer/start/nvim-rg",
+    url = "https://github.com/duane9/nvim-rg"
+  },
   ["nvim-treesitter"] = {
     loaded = true,
     path = "/Users/hristogueorguiev/.local/share/nvim/site/pack/packer/start/nvim-treesitter",
