@@ -2,8 +2,7 @@
 -- Setup editor options
 --------------------------------------------------------------------------------
 -- TODO:
--- -- Null.ls formatting and linting
--- -- Completion
+-- -- Null.ls formatting and linting, add keymaps and configuration
 -- -- Maybe LSP
 
 local return_code, utils = pcall(require, 'user.utils') 
@@ -187,60 +186,18 @@ require('packer').startup(function(use)
   use 'danilo-augusto/vim-afterglow'
   use 'nvim-tree/nvim-web-devicons'
   ------ Completion. Modified from LunarVim
-  -- use { -- Install nvim-cmp, and buffer source as a dependency
-  --   "hrsh7th/nvim-cmp",
-  --   config = function()
-  --     if lvim.builtin.cmp then
-  --       require("lvim.core.cmp").setup()
-  --     end
-  --   end,
-  --   requires = {
-  --     "L3MON4D3/LuaSnip",
-  --   },
-  -- }
-  --
-  -- use {
-  --   "rafamadriz/friendly-snippets",
-  -- }
-  --
-  -- use {
-  --   "L3MON4D3/LuaSnip",
-  --   config = function()
-  --     local paths = {}
-  --     paths[#paths + 1] = utils.join_paths(get_runtime_dir(), "site", "pack", "packer", "start", "friendly-snippets")
-  --     local user_snippets = utils.join_paths(get_config_dir(), "snippets")
-  --     if utils.is_directory(user_snippets) then
-  --       paths[#paths + 1] = user_snippets
-  --     end
-  --     require("luasnip.loaders.from_lua").lazy_load()
-  --     require("luasnip.loaders.from_vscode").lazy_load {
-  --       paths = paths,
-  --     }
-  --     require("luasnip.loaders.from_snipmate").lazy_load()
-  --   end,
-  -- }
-  --
-  -- use {
-  --   "hrsh7th/cmp-nvim-lsp",
-  -- }
-  --
-  -- use {
-  --   "saadparwaiz1/cmp_luasnip",
-  -- }
-  --
-  -- use {
-  --   "hrsh7th/cmp-buffer",
-  -- }
-  --
-  -- use {
-  --   "hrsh7th/cmp-path",
-  -- }
-  --
-  -- use {
-  --   "folke/neodev.nvim",
-  --   module = "neodev",
-  -- }
-
+  use { 'hrsh7th/nvim-cmp' } -- The completion plugin
+  use { 'hrsh7th/cmp-buffer' } -- buffer completions
+  use { 'hrsh7th/cmp-path' } -- path completions
+  use { 'folke/neodev.nvim' } -- nvim API completions
+  use { 'saadparwaiz1/cmp_luasnip' } -- snippet completions
+  use { 'hrsh7th/cmp-nvim-lsp' }
+  use { 'hrsh7th/cmp-nvim-lua' }
+  -- snippets
+  use { "rafamadriz/friendly-snippets" } -- a bunch of snippets to use
+  use { "L3MON4D3/LuaSnip" } --snippet engine
+  -- Formatting and Linting
+  use { "jose-elias-alvarez/null-ls.nvim" }
   ---- List of plugins end
 
   if install_plugins then
@@ -370,3 +327,8 @@ require("symbols-outline").setup()
 ---- CamelCaseMotion
 vim.g["camelcasemotion_key"] = "<LEADER><LEADER>"
 
+---- Completion & Snippets
+require("user.cmp")
+
+---- Formatting and Linting
+require("user.null-ls")
