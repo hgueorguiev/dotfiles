@@ -85,7 +85,7 @@ local map = vim.keymap.set
 
 map("n", "<C-s>", ":w<CR>", def_op)
 map("i", "<C-s>", "<ESC>:w<CR>a", def_op)
-map("n", "<LEADER>h", ":noh<CR>", def_op)
+map("n", "<LEADER>h", ":noh<CR>", {desc="Clear search highlight", remap=false})
 map("i", "jk", "<ESC>", def_opt)
 
 -- Stay in indent mode
@@ -230,6 +230,13 @@ require("packer").startup(function(use)
 	use({ "L3MON4D3/LuaSnip" }) --snippet engine
 	-- Formatting and Linting
 	use({ "jose-elias-alvarez/null-ls.nvim" })
+  ------ Help & Legends
+  use {
+    "folke/which-key.nvim",
+    config = function()
+    end
+  }
+
 	---- List of plugins end
 
 	if install_plugins then
@@ -366,6 +373,9 @@ require("nvim-web-devicons").setup({
 ----Code symbol outline
 require("symbols-outline").setup()
 
+---- WhichKey
+require("which-key").setup()
+
 ---- CamelCaseMotion
 vim.g["camelcasemotion_key"] = "<LEADER><LEADER>"
 
@@ -377,3 +387,4 @@ require("user.null-ls")
 
 ---- Fix QuickFixes 
 require("user.quickfix_actually")
+
