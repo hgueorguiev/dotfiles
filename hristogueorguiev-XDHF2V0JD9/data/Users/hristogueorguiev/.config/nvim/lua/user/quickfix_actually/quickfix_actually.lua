@@ -7,10 +7,11 @@ local M = {}
 function M.tmp_do_all()
 	vim.go.errorformat = vim.go.errorformat .. ",%f|%l col %c|%m"
 
-	vim.keymap.set("n", "<LEADER>qo", ":copen<CR>", { silent = true })
+	vim.keymap.set("n", "<LEADER>qo", ":copen<CR>", { desc = "Open BetterQuickfix List", silent = true })
+
+  vim.cmd("sign define QFmatch text=")
 
 	function better_qf()
-		vim.cmd("sign define QFmatch text=")
 		local cur_buf = vim.api.nvim_get_current_buf()
 		vim.keymap.set(
 			"n",
@@ -30,7 +31,7 @@ function M.tmp_do_all()
 		vim.keymap.set("n", "<C-s>", ":cgetbuffer<CR>:cclose<CR>:copen<CR>", { remap = false, buffer = cur_buf })
 	end
 
-	vim.api.nvim_create_autocmd( -- Enter insert mode when entering a Term buffer
+	vim.api.nvim_create_autocmd(
 		{
 			"FileType",
 		},
