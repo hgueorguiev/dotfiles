@@ -1,7 +1,7 @@
 -- TODO:
--- require("which-key").register({
 -- -- Null.ls formatting and linting, update for python and JS configuration
--- -- Maybe LSP
+-- -- Finish and reenable betterquickfix
+-- -- Code clean up, fix fallbacks etc.
 
 local return_code, utils = pcall(require, "user.utils")
 local return_code, t_builtin = pcall(require, "telescope.builtin")
@@ -105,6 +105,9 @@ require("packer").startup(function(use)
 	------ Status lines
 	use("nvim-lualine/lualine.nvim")
 	------ Code introspection
+  use({ -- LSP Server configurations
+    'neovim/nvim-lspconfig'
+  }) 
 	use({ -- Code parser
 		"nvim-treesitter/nvim-treesitter",
 		run = ":TSUpdate",
@@ -345,6 +348,19 @@ require("user.null-ls")
 ---- Fix QuickFixes 
 -- require("user.quickfix_actually")
 
+-- Setup language servers.
+local lspconfig = require('lspconfig')
+lspconfig.pyright.setup {}
+lspconfig.tsserver.setup {}
+-- lspconfig.rust_analyzer.setup {
+--   -- Server-specific settings. See `:help lspconfig-setup`
+--   settings = {
+--     ['rust-analyzer'] = {},
+--   },
+-- }
+
+
+
 --------------------------------------------------------------------------------
 -- Key bindings/ mappings
 --------------------------------------------------------------------------------
@@ -436,14 +452,6 @@ map("n", "<LEADER>fo", t_builtin.oldfiles, { desc = "Find recently opened file",
 -- Quick telescope.live_grep search from whats in the buffer search register
 map("n", "<LEADER>f*", utils.grep_on_search_register, { desc = "Grep on value in search register", noremap = true})
 
----- LSP Formatting and Diagnostics
-map("n", "<LEADER>lf", function()
-	vim.lsp.buf.format({ timeout_ms = 2000 })
-end, { desc = "Format buffer", noremap = true })
-map("v", "<LEADER>lf", function()
-	vim.lsp.buf.format({ timeout_ms = 2000 })
-end, { desc = "Format selection", noremap = true })
-
 ---- Filetree
 map("n", "<LEADER>e", ":Neotree<CR>", { desc="Open file tree", remap=false })
 
@@ -451,3 +459,62 @@ map("n", "<LEADER>e", ":Neotree<CR>", { desc="Open file tree", remap=false })
 map("n", "<LEADER>rg", ":Rg<CR>", { desc = "Grep ask for input", noremap = true })
 map("n", "<LEADER>rw", ":Rg *<CR>", { desc = "Grep for word under cursor", noremap = true })
 
+
+---- LSP Formatting and Diagnostics
+map("n", "<LEADER>lf", function()
+	vim.lsp.buf.format({ timeout_ms = 2000, async = true})
+end, { desc = "Format buffer", noremap = true })
+map("v", "<LEADER>lf", function()
+	vim.lsp.buf.format({ timeout_ms = 2000, async = true })
+end, { desc = "Format selection", noremap = true })
+
+-- LSP Global mappings.
+-- See `:help vim.diagnostic.*` for documentation on any of the below functions
+map('n', '<space>le', vim.diagnostic.open_float, { desc = "Open diagnostic float" })
+map('n', '[d', vim.diagnostic.goto_prev, { desc = "Prev diagnostic message" })
+map('n', ']d', vim.diagnostic.goto_next, { desc = "Next diagnostic message" })
+map('n', '<space>lq', vim.diagnostic.setloclist, { desc = "Send diagnostic messages to location list" })
+
+-- Use LspAttach autocommand to only map the following keys
+-- after the language server attaches to the current buffer
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
+  callback = function(ev)
+    -- Enable completion triggered by <c-x><c-o>
+    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+
+    -- Buffer local mappings.
+    -- See `:help vim.lsp.*` for documentation on any of the below functions
+    local opts = { buffer = ev.buf }
+    opts["desc"] = "Goto declaration"
+    map('n', 'gD', vim.lsp.buf.declaration, opts)
+    opts["desc"] = "Goto definition"
+    map('n', 'gd', vim.lsp.buf.definition, opts)
+    opts["desc"] = "Goto implementation"
+    map('n', 'gi', vim.lsp.buf.implementation, opts)
+    opts["desc"] = "Goto references"
+    map('n', 'gr', vim.lsp.buf.references, opts)
+
+    opts["desc"] = "Hover docs"
+    map('n', 'K', vim.lsp.buf.hover, opts)
+    opts["desc"] = "Signature help"
+    map('n', '<C-k>', vim.lsp.buf.signature_help, opts)
+
+    opts["desc"] = "Add workspace folder"
+    map('n', '<space>lwa', vim.lsp.buf.add_workspace_folder, opts)
+    opts["desc"] = "Remove workspace folder"
+    map('n', '<space>lwr', vim.lsp.buf.remove_workspace_folder, opts)
+    opts["desc"] = "List workspace folders"
+    map('n', '<space>lwl', function()
+      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, opts)
+
+    opts["desc"] = "Type definition"
+    map('n', '<space>lD', vim.lsp.buf.type_definition, opts)
+    opts["desc"] = "Rename symbol"
+    map('n', '<space>lr', vim.lsp.buf.rename, opts)
+    opts["desc"] = "Code action"
+    map('n', '<space>lc', vim.lsp.buf.code_action, opts)
+    opts["desc"] = nil
+  end,
+})
