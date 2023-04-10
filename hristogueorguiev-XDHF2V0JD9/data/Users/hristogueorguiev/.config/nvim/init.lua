@@ -1,6 +1,5 @@
 -- TODO:
 -- -- Null.ls formatting and linting, update for python and JS configuration
--- -- Finish and reenable betterquickfix
 -- -- Code clean up, fix fallbacks etc.
 
 local return_code, utils = pcall(require, "user.utils")
@@ -14,6 +13,7 @@ local return_code, gps = pcall(require, "nvim-gps")
 vim.go.viminfo = vim.go.viminfo .. ",n~/.cache/.viminfo"
 vim.opt.mouse = "a"
 vim.opt.colorcolumn = "120"
+vim.opt.cmdwinheight=3
 ---- Splits
 vim.opt.splitbelow = true
 ---- Spelling
@@ -345,9 +345,6 @@ require("user.cmp")
 ---- Formatting and Linting
 require("user.null-ls")
 
----- Fix QuickFixes 
--- require("user.quickfix_actually")
-
 -- Setup language servers.
 local lspconfig = require('lspconfig')
 lspconfig.pyright.setup {}
@@ -394,6 +391,12 @@ local map = vim.keymap.set
 map("n", "<C-s>", ":w<CR>", { desc="Save file", remap=false })
 map("i", "<C-s>", "<ESC>:w<CR>a", { desc="Save file", remap=false })
 map("i", "jk", "<ESC>", def_opt)
+map("v", "jk", "<ESC>", def_opt)
+
+-- Commands always in edit window
+map("n", ":", "q:i", def_opt)
+map("v", ":", "q:i", def_opt)
+map("n", "q:", ":", def_opt)
 
 -- Stay in indent mode
 map("v", "<", "<gv", def_opt)

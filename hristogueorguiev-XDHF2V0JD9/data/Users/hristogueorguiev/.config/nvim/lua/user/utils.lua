@@ -69,7 +69,7 @@ function utils_module.grep_in_blob()
   
   vim.ui.input({
    prompt = "Search in glob:",
-   completrion = "file",
+   completion = "file",
    default = "**/*."
   },
   process_glob)
