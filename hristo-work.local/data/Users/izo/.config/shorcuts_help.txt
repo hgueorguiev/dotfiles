@@ -78,5 +78,25 @@ ctrl+shift+1, ctrl+shift+2 … ctrl+shift+0 (also ⌘+1, ⌘+2 … ⌘+9 on macO
 
 End Kitty : Window
 
-# TODO: Add quick shorcut query to zsh utils
-# rg 'Kitty : Window.*New' shorcuts_help.txt -A2 -U --multiline-dotall
+Amethyst : Navigation
+
+Cycle clockwise
+⌘+shift+j
+
+Cycle counter clockwise
+⌘+shift+k
+
+Main window
+⌘+shift+m
+
+End Amethyst : Navigation
+
+Amethyst : Move windows
+
+Move window clockwise
+ctrl+shift+j
+
+Move window counter clockwise
+ctrl+shift+k
+
+End Amethyst : Move windows

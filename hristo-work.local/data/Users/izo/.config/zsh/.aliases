@@ -42,6 +42,14 @@ alias vi-classic=/usr/bin/vi
 alias vim=nvim
 alias vi=vim
 
+# HELP
+alias '?'="history | rg"
+
+function search_shortcuts() {
+  rg "$1.* : $2.*$3" ~/.config/shorcuts_help.txt -A2 -U --multiline-dotall
+}
+alias '??'=search_shortcuts
+
 # Edit configs
 function edcfg() {
   typeset -A config_types
