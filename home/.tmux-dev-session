@@ -1,8 +1,0 @@
-# Dev. tmux session
-rename-session -t 0 dev-session
-rename-window "vim/app/cmd"
-splitw -h -p 35
-splitw -v -p 50 
-selectw -t 1
-selectp -t 0
-
