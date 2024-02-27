@@ -21,6 +21,7 @@ alias la="lsd -alh"
 
 # Chage director command
 alias d="dirs -v"
+alias cd..="cd .."
 
 # Fix history
 alias history="history 0"
@@ -42,13 +43,16 @@ alias vi-classic=/usr/bin/vi
 alias vim=nvim
 alias vi=vim
 
+# Grepping
+alias rgm="rg -U --multiline-dotall"
+
 # HELP
-alias '?'="history | rg"
+alias '?'="history | rg" # History search
 
 function search_shortcuts() {
   rg "$1.* : $2.*$3" ~/.config/shorcuts_help.txt -A2 -U --multiline-dotall
 }
-alias '??'=search_shortcuts
+alias '??'=search_shortcuts # Shortcuts search
 
 # Edit configs
 function edcfg() {

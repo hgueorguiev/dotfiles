@@ -1,0 +1,7 @@
+[alias]
+  sweep = !git branch --merged main | rg -v '^\\* main|main' ;| xargs git branch -d
+[core]
+	editor = nvim
+[push]
+	autosetupremote = true
+	default = current
