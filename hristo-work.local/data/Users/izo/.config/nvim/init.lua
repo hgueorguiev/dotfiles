@@ -39,6 +39,10 @@ vim.cmd("colorscheme afterglow")
 vim.cmd("hi Normal guibg=none") -- Remove background
 ---- Space as leader
 vim.g.mapleader = " "
+---- Code folding
+vim.opt.foldlevel=20
+vim.opt.foldmethod="expr"
+vim.opt.foldexpr="nvim_treesitter#foldexpr()"
 
 --------------------------------------------------------------------------------
 -- Auto commands
@@ -93,7 +97,7 @@ require("packer").startup(function(use)
 	------ Text search/ Fuzzy finding
 	use({ -- Telescope finder
 		"nvim-telescope/telescope.nvim",
-		tag = "0.1.0",
+		tag = "0.1.4",
 		-- or , branch = '0.1.x',
 		requires = {
 			{ "nvim-lua/plenary.nvim" },
@@ -404,6 +408,7 @@ require("user.null-ls")
 local lspconfig = require('lspconfig')
 lspconfig.pyright.setup {}
 lspconfig.tsserver.setup {}
+lspconfig.vuels.setup {}
 -- lspconfig.rust_analyzer.setup {
 --   -- Server-specific settings. See `:help lspconfig-setup`
 --   settings = {

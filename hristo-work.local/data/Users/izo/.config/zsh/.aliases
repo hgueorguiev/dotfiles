@@ -54,6 +54,7 @@ function search_shortcuts() {
 }
 alias '??'=search_shortcuts # Shortcuts search
 
+alias '???'="cht.sh"
 # Edit configs
 function edcfg() {
   typeset -A config_types

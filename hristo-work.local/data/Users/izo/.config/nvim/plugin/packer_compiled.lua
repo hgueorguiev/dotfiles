@@ -49,8 +49,8 @@ local function save_profiles(threshold)
 end
 
 time([[Luarocks path setup]], true)
-local package_path_str = "/Users/izo/.cache/nvim/packer_hererocks/2.1.0-beta3/share/lua/5.1/?.lua;/Users/izo/.cache/nvim/packer_hererocks/2.1.0-beta3/share/lua/5.1/?/init.lua;/Users/izo/.cache/nvim/packer_hererocks/2.1.0-beta3/lib/luarocks/rocks-5.1/?.lua;/Users/izo/.cache/nvim/packer_hererocks/2.1.0-beta3/lib/luarocks/rocks-5.1/?/init.lua"
-local install_cpath_pattern = "/Users/izo/.cache/nvim/packer_hererocks/2.1.0-beta3/lib/lua/5.1/?.so"
+local package_path_str = "/Users/izo/.cache/nvim/packer_hererocks/2.1.1703358377/share/lua/5.1/?.lua;/Users/izo/.cache/nvim/packer_hererocks/2.1.1703358377/share/lua/5.1/?/init.lua;/Users/izo/.cache/nvim/packer_hererocks/2.1.1703358377/lib/luarocks/rocks-5.1/?.lua;/Users/izo/.cache/nvim/packer_hererocks/2.1.1703358377/lib/luarocks/rocks-5.1/?/init.lua"
+local install_cpath_pattern = "/Users/izo/.cache/nvim/packer_hererocks/2.1.1703358377/lib/lua/5.1/?.so"
 if not string.find(package.path, package_path_str, 1, true) then
   package.path = package.path .. ';' .. package_path_str
 end
@@ -195,7 +195,7 @@ _G.packer_plugins = {
     url = "https://github.com/nvim-lua/plenary.nvim"
   },
   ["rest.nvim"] = {
-    config = { "\27LJ\2\n>\0\1\5\0\4\0\0066\1\0\0009\1\1\0019\1\2\0015\3\3\0\18\4\0\0D\1\3\0\1\5\0\0\ttidy\a-i\a-q\6-\vsystem\afn\bvimï\3\1\0\6\0\r\0\0176\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\3\0005\3\4\0=\3\5\0025\3\6\0005\4\a\0003\5\b\0=\5\t\4=\4\n\3=\3\v\0024\3\0\0=\3\f\2B\0\2\1K\0\1\0\29custom_dynamic_variables\vresult\15formatters\thtml\0\1\0\1\tjson\ajq\1\0\5\19show_http_info\2\22show_curl_command\1\rshow_url\2\20show_statistics\1\17show_headers\2\14highlight\1\0\2\fenabled\2\ftimeout\3–\1\1\0\v\26result_split_in_place\1\28result_split_horizontal\1\16env_pattern\v\\.env$\renv_file\t.env\20jump_to_request\1\21env_edit_command\ftabedit\16search_back\2\17yank_dry_run\2\15encode_url\2\26skip_ssl_verification\1'stay_in_current_window_after_split\1\nsetup\14rest-nvim\frequire\0" },
+    config = { "\27LJ\2\n>\0\1\5\0\4\0\0066\1\0\0009\1\1\0019\1\2\0015\3\3\0\18\4\0\0D\1\3\0\1\5\0\0\ttidy\a-i\a-q\6-\vsystem\afn\bvimï\3\1\0\6\0\r\0\0176\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\3\0005\3\4\0=\3\5\0025\3\6\0005\4\a\0003\5\b\0=\5\t\4=\4\n\3=\3\v\0024\3\0\0=\3\f\2B\0\2\1K\0\1\0\29custom_dynamic_variables\vresult\15formatters\thtml\0\1\0\1\tjson\ajq\1\0\5\17show_headers\2\19show_http_info\2\22show_curl_command\1\rshow_url\2\20show_statistics\1\14highlight\1\0\2\fenabled\2\ftimeout\3–\1\1\0\v\26result_split_in_place\1\28result_split_horizontal\1\20jump_to_request\1\renv_file\t.env\16env_pattern\v\\.env$\16search_back\2\17yank_dry_run\2\21env_edit_command\ftabedit\15encode_url\2\26skip_ssl_verification\1'stay_in_current_window_after_split\1\nsetup\14rest-nvim\frequire\0" },
     loaded = true,
     path = "/Users/izo/.local/share/nvim/site/pack/packer/start/rest.nvim",
     url = "https://github.com/rest-nvim/rest.nvim"
@@ -234,14 +234,14 @@ _G.packer_plugins = {
 }
 
 time([[Defining packer_plugins]], false)
--- Config for: rest.nvim
-time([[Config for rest.nvim]], true)
-try_loadstring("\27LJ\2\n>\0\1\5\0\4\0\0066\1\0\0009\1\1\0019\1\2\0015\3\3\0\18\4\0\0D\1\3\0\1\5\0\0\ttidy\a-i\a-q\6-\vsystem\afn\bvimï\3\1\0\6\0\r\0\0176\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\3\0005\3\4\0=\3\5\0025\3\6\0005\4\a\0003\5\b\0=\5\t\4=\4\n\3=\3\v\0024\3\0\0=\3\f\2B\0\2\1K\0\1\0\29custom_dynamic_variables\vresult\15formatters\thtml\0\1\0\1\tjson\ajq\1\0\5\19show_http_info\2\22show_curl_command\1\rshow_url\2\20show_statistics\1\17show_headers\2\14highlight\1\0\2\fenabled\2\ftimeout\3–\1\1\0\v\26result_split_in_place\1\28result_split_horizontal\1\16env_pattern\v\\.env$\renv_file\t.env\20jump_to_request\1\21env_edit_command\ftabedit\16search_back\2\17yank_dry_run\2\15encode_url\2\26skip_ssl_verification\1'stay_in_current_window_after_split\1\nsetup\14rest-nvim\frequire\0", "config", "rest.nvim")
-time([[Config for rest.nvim]], false)
 -- Config for: which-key.nvim
 time([[Config for which-key.nvim]], true)
 try_loadstring("\27LJ\2\n\v\0\0\1\0\0\0\1K\0\1\0\0", "config", "which-key.nvim")
 time([[Config for which-key.nvim]], false)
+-- Config for: rest.nvim
+time([[Config for rest.nvim]], true)
+try_loadstring("\27LJ\2\n>\0\1\5\0\4\0\0066\1\0\0009\1\1\0019\1\2\0015\3\3\0\18\4\0\0D\1\3\0\1\5\0\0\ttidy\a-i\a-q\6-\vsystem\afn\bvimï\3\1\0\6\0\r\0\0176\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\3\0005\3\4\0=\3\5\0025\3\6\0005\4\a\0003\5\b\0=\5\t\4=\4\n\3=\3\v\0024\3\0\0=\3\f\2B\0\2\1K\0\1\0\29custom_dynamic_variables\vresult\15formatters\thtml\0\1\0\1\tjson\ajq\1\0\5\17show_headers\2\19show_http_info\2\22show_curl_command\1\rshow_url\2\20show_statistics\1\14highlight\1\0\2\fenabled\2\ftimeout\3–\1\1\0\v\26result_split_in_place\1\28result_split_horizontal\1\20jump_to_request\1\renv_file\t.env\16env_pattern\v\\.env$\16search_back\2\17yank_dry_run\2\21env_edit_command\ftabedit\15encode_url\2\26skip_ssl_verification\1'stay_in_current_window_after_split\1\nsetup\14rest-nvim\frequire\0", "config", "rest.nvim")
+time([[Config for rest.nvim]], false)
 
 _G._packer.inside_compile = false
 if _G._packer.needs_bufread == true then
