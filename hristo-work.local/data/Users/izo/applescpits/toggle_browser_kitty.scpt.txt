@@ -1,0 +1,40 @@
+on ToggleApp(appName)
+	tell application "System Events"
+		set isVisible to get visible of process appName
+		set toggledVisible to isVisible
+		
+		if toggledVisible then
+			set toggledVisible to false
+		else
+			set toggledVisible to true
+		end if
+		
+		log isVisible
+		log toggledVisible
+		
+		repeat until isVisible is toggledVisible
+			-- delay 1 -- pause script for 1 second
+			set visible of process appName to toggledVisible
+			set isVisible to visible of process appName
+		end repeat
+		
+		if isVisible then
+			activate application appName
+			set frontmost of process appName to true
+		else
+			
+			-- set frontmost to true windows where title contains "bash" if result is not {} then perform action "AXRaise" of item 1 of result
+			-- display dialog lastApp
+			set frontmost of process appName to false
+			activate application "kitty"
+		end if
+	end tell
+end ToggleApp
+
+on run {input, parameters}
+	set app_ to "qutebrowser"
+	
+	launch application app_
+	ToggleApp(app_)
+	return 0
+end run
