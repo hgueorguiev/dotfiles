@@ -1,7 +1,11 @@
 -- TODO:
 -- -- Null.ls formatting and linting, update for python and JS configuration
 -- -- Code clean up, fix fallbacks etc.
+
 local return_code, utils = pcall(require, "user.utils")
+local return_code, t_builtin = pcall(require, "telescope.builtin")
+local return_code, gps = pcall(require, "nvim-gps")
+--------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
 -- Setup editor options
@@ -72,106 +76,121 @@ vim.api.nvim_create_user_command("ToggleTerminalSplit", utils.toggle_terminal_sp
 --------------------------------------------------------------------------------
 -- Plugin manager
 --------------------------------------------------------------------------------
-local lazypath = vim.fn.stdpath("data") .. "/site/lazy/lazy.nvim"
-vim.opt.rtp:prepend(lazypath)
-local plugins = {
+local install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
+local install_plugins = false
+
+if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
+	print("Installing packer...")
+	local packer_url = "https://github.com/wbthomason/packer.nvim"
+	vim.fn.system({ "git", "clone", "--depth", "1", packer_url, install_path })
+	print("Done.")
+
+	vim.cmd("packadd packer.nvim")
+	install_plugins = true
+end
+
+require("packer").startup(function(use)
 	---- List of plugins...
 	------ Lib. plugins
-	"nvim-lua/plenary.nvim",
-	{ "nvim-telescope/telescope-fzf-native.nvim", run = "make" },
+	use("nvim-lua/plenary.nvim")
+	use({ "nvim-telescope/telescope-fzf-native.nvim", run = "make" })
 	------ Text search/ Fuzzy finding
-	{ -- Telescope finder
+	use({ -- Telescope finder
 		"nvim-telescope/telescope.nvim",
-		-- tag = "0.1.8",
-		dependencies = {
+		tag = "0.1.4",
+		-- or , branch = '0.1.x',
+		requires = {
 			{ "nvim-lua/plenary.nvim" },
 		},
-	},
-	"duane9/nvim-rg", -- RipGrep
+	})
+	use("duane9/nvim-rg") -- RipGrep
+	------ Package manager
+	use("wbthomason/packer.nvim")
 	------ Status lines
-	"nvim-lualine/lualine.nvim",
+	use("nvim-lualine/lualine.nvim")
 	------ Code introspection
-  { -- LSP Server configurations
+  use({ -- LSP Server configurations
     'neovim/nvim-lspconfig'
-  }, 
-	{ -- Code parser
+  }) 
+	use({ -- Code parser
 		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
-	},
-	{ -- Code object insights
-		"SmiteshP/nvim-navic",
-		dependencies = "neovim/nvim-lspconfig",
-	},
-	{ -- Smart comments
+		run = ":TSUpdate",
+	})
+	use({ -- Code object insights
+		"SmiteshP/nvim-gps",
+		requires = "nvim-treesitter/nvim-treesitter",
+	})
+	use({ -- Smart comments
 		"numToStr/Comment.nvim",
-	},
-	{ -- GIT integration
+	})
+	use({ -- GIT integration
 		"lewis6991/gitsigns.nvim",
-	},
-	{ -- Code symbol outline
+	})
+	use({ -- Code symbol outline
 		"simrat39/symbols-outline.nvim",
-	},
+	})
 	------ Objects & Motions
-	{ "tpope/vim-surround" }, -- Add suround objects
-	{ "bkad/CamelCaseMotion" }, -- Add word case objects
-	"ggandor/leap.nvim", -- Match jumps
+	use({ "tpope/vim-surround" }) -- Add suround objects
+	use({ "bkad/CamelCaseMotion" }) -- Add word case objects
+	use("ggandor/leap.nvim") -- Match jumps
 	------ Colorschemes/ Style
-	"danilo-augusto/vim-afterglow",
-	"nvim-tree/nvim-web-devicons",
+	use("danilo-augusto/vim-afterglow")
+	use("nvim-tree/nvim-web-devicons")
 	------ Completion. Modified from LunarVim
-	{ "hrsh7th/nvim-cmp" }, -- The completion plugin
-	{ "hrsh7th/cmp-buffer" }, -- buffer completions
-	{ "hrsh7th/cmp-path" }, -- path completions
-	{ "folke/neodev.nvim" }, -- nvim API completions
-	{ "saadparwaiz1/cmp_luasnip" }, -- snippet completions
-	{ "hrsh7th/cmp-nvim-lsp" },
-	{ "hrsh7th/cmp-nvim-lua" },
+	use({ "hrsh7th/nvim-cmp" }) -- The completion plugin
+	use({ "hrsh7th/cmp-buffer" }) -- buffer completions
+	use({ "hrsh7th/cmp-path" }) -- path completions
+	use({ "folke/neodev.nvim" }) -- nvim API completions
+	use({ "saadparwaiz1/cmp_luasnip" }) -- snippet completions
+	use({ "hrsh7th/cmp-nvim-lsp" })
+	use({ "hrsh7th/cmp-nvim-lua" })
 	-- snippets
-	{ "rafamadriz/friendly-snippets" }, -- a bunch of snippets to use
-	{ "L3MON4D3/LuaSnip" }, --snippet engine
+	use({ "rafamadriz/friendly-snippets" }) -- a bunch of snippets to use
+	use({ "L3MON4D3/LuaSnip" }) --snippet engine
 	-- Formatting and Linting
-	{ "jose-elias-alvarez/null-ls.nvim" },
+	use({ "jose-elias-alvarez/null-ls.nvim" })
   ------ Help & Legends
-  {
+  use({
     "folke/which-key.nvim",
     config = function()
     end
-  },
+  })
   ------ File Navigation
   -- File tree
-  -- vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1 ]]),
-  {
+  vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1 ]])
+  use {
     "nvim-neo-tree/neo-tree.nvim",
-      -- branch = "v2.x",
-      dependencies = { 
+      branch = "v2.x",
+      requires = { 
         "nvim-lua/plenary.nvim",
         "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
         "MunifTanjim/nui.nvim",
       }
-  },
+  }
   ------ Network utils
   -- HTTP requests 
-  {
+  use {
     "rest-nvim/rest.nvim",
+    requires = { "nvim-lua/plenary.nvim" },
     config = function()
       require("rest-nvim").setup({
-        -- open request results in a horizontal split
+        -- Open request results in a horizontal split
         result_split_horizontal = false,
-        -- keep the http file buffer above|left when split horizontal|vertical
+        -- Keep the http file buffer above|left when split horizontal|vertical
         result_split_in_place = false,
         -- stay in current windows (.http file) or change to results window (default)
         stay_in_current_window_after_split = false,
-        -- skip ssl verification, useful for unknown certificates
+        -- Skip SSL verification, useful for unknown certificates
         skip_ssl_verification = false,
-        -- encode url before making request
+        -- Encode URL before making request
         encode_url = true,
-        -- highlight request on run
+        -- Highlight request on run
         highlight = {
           enabled = true,
           timeout = 150,
         },
         result = {
-          -- toggle showing url, http info, headers at top the of result window
+          -- toggle showing URL, HTTP info, headers at top the of result window
           show_url = true,
           -- show the generated curl command in case you want to launch
           -- the same request via the terminal (can be verbose)
@@ -179,7 +198,7 @@ local plugins = {
           show_http_info = true,
           show_headers = true,
           -- table of curl `--write-out` variables or false if disabled
-          -- for more granular control see statistics spec
+          -- for more granular control see Statistics Spec
           show_statistics = false,
           -- executables or functions for formatting response body [optional]
           -- set them to false if you want to disable them
@@ -190,7 +209,7 @@ local plugins = {
             end
           },
         },
-        -- jump to request line on run
+        -- Jump to request line on run
         jump_to_request = false,
         env_file = '.env',
         -- for telescope select
@@ -202,14 +221,19 @@ local plugins = {
       })
     end
   }
-}
+	---- List of plugins end
+	if install_plugins then
+		require("packer").sync()
+	end
+end)
 
-require("lazy").setup({
-  spec = plugins
-})
+---- Stop config init to allow plugin installation
+---- TODO: this reload doesn't fully work as intended, probably need to use autocmd or something to fully solve
+if install_plugins then
+	print("Config init interupted to allow plugin installation. Reload")
+	return
+end
 
---------------------------------------------------------------------------------
-local return_code, t_builtin = pcall(require, "telescope.builtin")
 --------------------------------------------------------------------------------
 -- Plugin Configuration
 --------------------------------------------------------------------------------
@@ -258,7 +282,7 @@ require("lualine").setup({
     },
 		lualine_c = { 
       { 
-        "require'nvim-navic'.get_location()",
+        "require'nvim-gps'.get_location()",
         color = "lualine_a_replace",
       }
     },
@@ -292,9 +316,7 @@ require("leap").add_default_mappings()
 require("Comment").setup()
 
 ---- GPS
-require("nvim-navic").setup({
-  lsp = { auto_attach = true }
-})
+require("nvim-gps").setup()
 
 ---- GIT Signs
 require("gitsigns").setup({
@@ -385,7 +407,7 @@ require("user.null-ls")
 -- Setup language servers.
 local lspconfig = require('lspconfig')
 lspconfig.pyright.setup {}
-lspconfig.ts_ls.setup {}
+lspconfig.tsserver.setup {}
 lspconfig.vuels.setup {}
 -- lspconfig.rust_analyzer.setup {
 --   -- Server-specific settings. See `:help lspconfig-setup`
@@ -517,7 +539,7 @@ map('n', ']d', vim.diagnostic.goto_next, { desc = "Next diagnostic message" })
 map('n', '<space>lq', vim.diagnostic.setloclist, { desc = "Send diagnostic messages to location list" })
 
 -- HTTP Requests
-map('n', '<space>nr', '<cmd>Rest run<CR>', { desc = "HTTP request execute" })
+map('n', '<space>nr', require('rest-nvim').run, { desc = "HTTP request execute" })
 
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
