@@ -75,6 +75,29 @@ function utils_module.grep_in_blob()
   process_glob)
 end
 
+-- BG Color helpers
+local function get_color(group, attr)
+    return vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID(group)), attr)
+end
+
+
+function utils_module.toggle_bg()
+  bg = get_color("Normal", "bg#")
+  if vim.g.saved_bg_color == nil then
+    if not vim.g.bg_color_override then
+      vim.g.saved_bg_color = bg
+    else
+      vim.g.saved_bg_color = vim.g.bg_color_override 
+    end
+  end
+
+  if (bg == nil or bg == '') then
+    vim.cmd("hi Normal guibg=" .. vim.g.saved_bg_color) -- Remove background
+  else
+    vim.cmd("hi Normal guibg=none") -- Remove background
+  end
+end
+
 --------------------------------------------------------------------------------
 -- From LUNAR Vim
 --------------------------------------------------------------------------------

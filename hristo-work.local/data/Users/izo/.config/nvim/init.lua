@@ -1,5 +1,3 @@
--- TODO:
--- -- Null.ls formatting and linting, update for python and JS configuration
 -- -- Code clean up, fix fallbacks etc.
 local return_code, utils = pcall(require, "user.utils")
 
@@ -32,13 +30,19 @@ vim.opt.expandtab = true
 ---- Colors
 vim.opt.termguicolors = true
 vim.cmd("colorscheme afterglow")
-vim.cmd("hi Normal guibg=none") -- Remove background
+
+-- vim.cmd("hi Normal guibg=none") -- Remove background
+vim.g.bg_color_override="DarkOrchid4"
+utils.toggle_bg()
 ---- Space as leader
 vim.g.mapleader = " "
 ---- Code folding
 vim.opt.foldlevel=20
 vim.opt.foldmethod="expr"
 vim.opt.foldexpr="nvim_treesitter#foldexpr()"
+
+---- CamelCaseMotion (Needs to be set before pulgin loads)
+vim.g["camelcasemotion_key"] = "<LEADER><LEADER>"
 
 --------------------------------------------------------------------------------
 -- Auto commands
@@ -201,6 +205,11 @@ local plugins = {
         search_back = true,
       })
     end
+  },
+  -- Web
+  {
+    'yuratomo/w3m.vim',
+    event = 'VeryLazy',
   }
 }
 
@@ -373,9 +382,6 @@ require("nvim-web-devicons").setup({
 ----Code symbol outline
 require("symbols-outline").setup()
 
----- CamelCaseMotion
-vim.g["camelcasemotion_key"] = "<LEADER><LEADER>"
-
 ---- Completion & Snippets
 require("user.cmp")
 
@@ -408,6 +414,8 @@ whichkey.register({
     r = {name = "Rip Grep"},
     t = {name = "Toggle options"},
     l = {name = "LSP"},
+    n = {name = "Network"},
+    g = {name = "Git"},
     [" "] = {name = "Camel Case Motions"},
   }
 })
@@ -473,9 +481,10 @@ map("t", "ttt", "<C-\\><C-n><C-w>:ToggleTerminalSplit<CR>", def_opt)
 map("i", "<C-j>", 'pumvisible() ? "\\<C-n>" : "\\<C-j>"', { expr = true, noremap = true })
 map("i", "<C-k>", 'pumvisible() ? "\\<C-p>" : "\\<C-k>"', { expr = true, noremap = true })
 
----- Spelling on/off
+---- Toggle stuff
 map("n", "<LEADER>ts", ":set spell!<CR>", { desc="Toggle spelling", noremap = true})
 map("n", "<LEADER>th", ":noh<CR>", { desc="Clear search highlight", remap=false })
+map("n", "<LEADER>tt", utils.toggle_bg, { desc="Toggle BG", remap=false })
 
 ---- Buffer nav
 map("n", "H", ":bp<CR>", def_op)

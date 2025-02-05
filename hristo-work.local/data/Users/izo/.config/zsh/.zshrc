@@ -9,6 +9,13 @@ echo "Enable VI mode ..." | lolcat
 # Shell PATH
 export PATH=$HOME/.local/bin:$PATH   # Add usr utils path
 export PATH="$HOME/.pyenv/bin:$PATH" # Add PyEnv path
+export PATH="$HOME/.modular/bin:$PATH" # Add PyEnv path
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/izo/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/izo/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/izo/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/izo/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+
 echo "Setup paths ..." | lolcat
 
 # Initialize PyEnv python version manager
@@ -95,9 +102,3 @@ echo "Shell plugins loaded ...\n" | lolcat
 
 # gucci rice :(
 neofetch
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/izo/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/izo/Downloads/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/izo/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/izo/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
