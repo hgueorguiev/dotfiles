@@ -5,3 +5,5 @@
 [push]
 	autosetupremote = true
 	default = current
+[pull]
+	rebase = false

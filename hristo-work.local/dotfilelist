@@ -2,3 +2,4 @@
 ~/.config
 ~/.local/bin/dump-colors.sh
 ~/.zprofile
+~/.zshenv

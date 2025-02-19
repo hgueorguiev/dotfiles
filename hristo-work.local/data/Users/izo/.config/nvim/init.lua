@@ -184,14 +184,15 @@ local plugins = {
 			"MunifTanjim/nui.nvim",
 		},
 	},
-	-- Formatting and Linting
-	require("user.null-ls"),
 	-- Harpooning for buffers
 	{
 		"ThePrimeagen/harpoon",
 		branch = "harpoon2",
 		dependencies = { "nvim-lua/plenary.nvim" },
 	},
+	---- Formatting and Linting
+	require("user.null-ls"),
+	require("user.render-markdown"),
 	------ Network utils
 	-- HTTP requests
 	require("user.rest"),
@@ -214,6 +215,11 @@ local return_code, t_builtin = pcall(require, "telescope.builtin")
 ---- Telescope
 local t_actions = require("telescope.actions")
 require("telescope").setup({
+	pickers = {
+		find_files = {
+			hidden = true,
+		},
+	},
 	defaults = {
 		-- Default configuration for telescope goes here:
 		mappings = {

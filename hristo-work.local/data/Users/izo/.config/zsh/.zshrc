@@ -10,11 +10,6 @@ echo "Enable VI mode ..." | lolcat
 export PATH=$HOME/.local/bin:$PATH   # Add usr utils path
 export PATH="$HOME/.pyenv/bin:$PATH" # Add PyEnv path
 export PATH="$HOME/.modular/bin:$PATH" # Add PyEnv path
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/izo/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/izo/Downloads/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/izo/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/izo/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
 
 echo "Setup paths ..." | lolcat
 
@@ -23,8 +18,10 @@ eval "$(pyenv init -)"
 echo "Pyenv init ..." | lolcat
 
 # Initialize NVM
-export NVM_DIR="$HOME/.nvm"
+export NVM_DIR="$HOME/.local/share/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+echo "NVM init ..." | lolcat
 
 # Load shell modules and helpers
 autoload -U colors && colors
@@ -50,20 +47,6 @@ setopt HIST_IGNORE_ALL_DUPS
 export LESSHISTFILE="$HOME/.cache/.lesshst"
 export SHELL_SESSIONS_DISABLE=1
 echo "Configure history ..." | lolcat
-# Configure browse filesystem behaviors
-# Basic auto/tab complete (source:LukeSmithxyz)
-# autoload -U compinit
-# zstyle ':completion:*' menu select
-# zmodload zsh/complist
-# compinit
-# _comp_options+=(globdots)		# Include hidden files.
-#
-# ## Use vim keys in tab complete menu:
-# bindkey -M menuselect '^h' vi-backward-char
-# bindkey -M menuselect '^k' vi-up-line-or-history
-# bindkey -M menuselect '^l' vi-forward-char
-# bindkey -M menuselect '^j' vi-down-line-or-history
-# bindkey -v '^?' backward-delete-char
 
 # Git status shell integration
 autoload -Uz vcs_info
@@ -91,13 +74,16 @@ precmd() {
 }
 echo "Setup git integration ..." | lolcat
 
+# Setup completion
+source $HOME/.config/zsh/completion.zsh
+echo "Setup shell completions ..." | lolcat
+
 # Load aliases
 source $HOME/.config/zsh/.aliases
 echo "Setup shell command aliases ..." | lolcat
 
 # Load Plugins 
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh # Syntax highlighting
-source /opt/homebrew/share/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 echo "Shell plugins loaded ...\n" | lolcat
 
 # gucci rice :(
