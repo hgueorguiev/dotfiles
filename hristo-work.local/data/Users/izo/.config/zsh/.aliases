@@ -67,12 +67,12 @@ function edcfg() {
   )
 
   if [[ $1 == $config_types[shell] ]] ; then
-    vi "$HOME/.config/zsh/.zshrc" "$HOME/.zprofile" "$HOME/.config/zsh/.aliases"
+    vi "$HOME/.config/zsh/.zshrc" "$HOME/.zprofile" "$HOME/.config/zsh/.aliases" --cmd "cd $HOME/.config/zsh/"
     return
   fi
 
   if [[ $1 == $config_types[editor] ]] ; then
-    vi "$HOME/.config/nvim/init.lua" "$HOME/.config/nvim/lua/user/utils.lua" 
+    vi "$HOME/.config/nvim/init.lua" "$HOME/.config/nvim/lua/user/utils.lua" --cmd "cd $HOME/.config/nvim/"
     return
   fi
 

@@ -7,9 +7,10 @@ local return_code, utils = pcall(require, "user.utils")
 vim.go.viminfo = vim.go.viminfo .. ",n~/.cache/.viminfo"
 vim.opt.mouse = "a"
 vim.opt.colorcolumn = "120"
-vim.opt.cmdwinheight=3
+vim.opt.cmdwinheight = 3
 ---- Splits
 vim.opt.splitbelow = true
+vim.opt.splitright = true
 ---- Spelling
 vim.opt.spelllang = "en"
 vim.opt.spellsuggest = "best,15"
@@ -17,6 +18,8 @@ vim.opt.spell = true
 ---- Line numbers
 vim.opt.number = true
 vim.opt.relativenumber = true
+vim.opt.numberwidth = 4
+vim.opt.signcolumn = "yes"
 ---- Case for find
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
@@ -30,17 +33,27 @@ vim.opt.expandtab = true
 ---- Colors
 vim.opt.termguicolors = true
 vim.cmd("colorscheme afterglow")
-
--- vim.cmd("hi Normal guibg=none") -- Remove background
-vim.g.bg_color_override="DarkOrchid4"
+vim.g.bg_color_override = "DarkOrchid4"
 utils.toggle_bg()
 ---- Space as leader
 vim.g.mapleader = " "
 ---- Code folding
-vim.opt.foldlevel=20
-vim.opt.foldmethod="expr"
-vim.opt.foldexpr="nvim_treesitter#foldexpr()"
-
+vim.opt.foldlevel = 20
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+---- Pseudo chars
+local space = "·"
+vim.opt.listchars:append({
+	tab = "│─",
+	multispace = space,
+	lead = space,
+	trail = space,
+	nbsp = space,
+	-- eol = "↵",
+	extends = ">",
+	precedes = "<",
+})
+vim.opt.list = true
 ---- CamelCaseMotion (Needs to be set before pulgin loads)
 vim.g["camelcasemotion_key"] = "<LEADER><LEADER>"
 
@@ -66,7 +79,6 @@ vim.api.nvim_create_autocmd( -- Enter insert mode when entering a Term buffer
 	}
 )
 
-
 --------------------------------------------------------------------------------
 -- Custom commands
 --------------------------------------------------------------------------------
@@ -78,29 +90,29 @@ vim.api.nvim_create_user_command("ToggleTerminalSplit", utils.toggle_terminal_sp
 --------------------------------------------------------------------------------
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.env.LAZY_PATH and not (vim.uv or vim.loop).fs_stat(lazypath) then
-  vim.api.nvim_echo({
-    {
-      "Cloning lazy.nvim\n\n",
-      "DiagnosticInfo",
-    },
-  }, true, {})
-  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local ok, out = pcall(vim.fn.system, {
-    "git",
-    "clone",
-    "--filter=blob:none",
-    lazyrepo,
-    lazypath,
-  })
-  if not ok or vim.v.shell_error ~= 0 then
-    vim.api.nvim_echo({
-      { "Failed to clone lazy.nvim\n", "ErrorMsg" },
-      { vim.trim(out or ""), "WarningMsg" },
-      { "\nPress any key to exit...", "MoreMsg" },
-    }, true, {})
-    vim.fn.getchar()
-    os.exit(1)
-  end
+	vim.api.nvim_echo({
+		{
+			"Cloning lazy.nvim\n\n",
+			"DiagnosticInfo",
+		},
+	}, true, {})
+	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+	local ok, out = pcall(vim.fn.system, {
+		"git",
+		"clone",
+		"--filter=blob:none",
+		lazyrepo,
+		lazypath,
+	})
+	if not ok or vim.v.shell_error ~= 0 then
+		vim.api.nvim_echo({
+			{ "Failed to clone lazy.nvim\n", "ErrorMsg" },
+			{ vim.trim(out or ""), "WarningMsg" },
+			{ "\nPress any key to exit...", "MoreMsg" },
+		}, true, {})
+		vim.fn.getchar()
+		os.exit(1)
+	end
 end
 vim.opt.rtp:prepend(lazypath)
 local plugins = {
@@ -118,11 +130,11 @@ local plugins = {
 	},
 	"duane9/nvim-rg", -- RipGrep
 	------ Status lines
-	"nvim-lualine/lualine.nvim",
+	require("user.lualine"),
 	------ Code introspection
-  { -- LSP Server configurations
-    'neovim/nvim-lspconfig'
-  }, 
+	{ -- LSP Server configurations
+		"neovim/nvim-lspconfig",
+	},
 	{ -- Code parser
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
@@ -134,9 +146,8 @@ local plugins = {
 	{ -- Smart comments
 		"numToStr/Comment.nvim",
 	},
-	{ -- GIT integration
-		"lewis6991/gitsigns.nvim",
-	},
+	-- GIT integration
+	require("user.gitsigns"),
 	{ -- Code symbol outline
 		"simrat39/symbols-outline.nvim",
 	},
@@ -158,88 +169,41 @@ local plugins = {
 	-- snippets
 	{ "rafamadriz/friendly-snippets" }, -- a bunch of snippets to use
 	{ "L3MON4D3/LuaSnip" }, --snippet engine
+	------ Help & Legends
+	{
+		"folke/which-key.nvim",
+		config = function() end,
+	},
+	------ File Navigation
+	-- File tree
+	{
+		"nvim-neo-tree/neo-tree.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+			"MunifTanjim/nui.nvim",
+		},
+	},
 	-- Formatting and Linting
-	{ "jose-elias-alvarez/null-ls.nvim" },
-  ------ Help & Legends
-  {
-    "folke/which-key.nvim",
-    config = function()
-    end
-  },
-  ------ File Navigation
-  -- File tree
-  -- vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1 ]]),
-  {
-    "nvim-neo-tree/neo-tree.nvim",
-      -- branch = "v2.x",
-      dependencies = { 
-        "nvim-lua/plenary.nvim",
-        "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
-        "MunifTanjim/nui.nvim",
-      }
-  },
-  ------ Network utils
-  -- HTTP requests 
-  {
-    "rest-nvim/rest.nvim",
-    config = function()
-      require("rest-nvim").setup({
-        -- open request results in a horizontal split
-        result_split_horizontal = false,
-        -- keep the http file buffer above|left when split horizontal|vertical
-        result_split_in_place = false,
-        -- stay in current windows (.http file) or change to results window (default)
-        stay_in_current_window_after_split = false,
-        -- skip ssl verification, useful for unknown certificates
-        skip_ssl_verification = false,
-        -- encode url before making request
-        encode_url = true,
-        -- highlight request on run
-        highlight = {
-          enabled = true,
-          timeout = 150,
-        },
-        result = {
-          -- toggle showing url, http info, headers at top the of result window
-          show_url = true,
-          -- show the generated curl command in case you want to launch
-          -- the same request via the terminal (can be verbose)
-          show_curl_command = false,
-          show_http_info = true,
-          show_headers = true,
-          -- table of curl `--write-out` variables or false if disabled
-          -- for more granular control see statistics spec
-          show_statistics = false,
-          -- executables or functions for formatting response body [optional]
-          -- set them to false if you want to disable them
-          formatters = {
-            json = "jq",
-            html = function(body)
-              return vim.fn.system({"tidy", "-i", "-q", "-"}, body)
-            end
-          },
-        },
-        -- jump to request line on run
-        jump_to_request = false,
-        env_file = '.env',
-        -- for telescope select
-        env_pattern = "\\.env$",
-        env_edit_command = "tabedit",
-        custom_dynamic_variables = {},
-        yank_dry_run = true,
-        search_back = true,
-      })
-    end
-  },
-  -- Web
-  {
-    'yuratomo/w3m.vim',
-    event = 'VeryLazy',
-  }
+	require("user.null-ls"),
+	-- Harpooning for buffers
+	{
+		"ThePrimeagen/harpoon",
+		branch = "harpoon2",
+		dependencies = { "nvim-lua/plenary.nvim" },
+	},
+	------ Network utils
+	-- HTTP requests
+	require("user.rest"),
+	-- Web
+	{
+		"yuratomo/w3m.vim",
+		event = "VeryLazy",
+	},
 }
 
 require("lazy").setup({
-  spec = plugins
+	spec = plugins,
 })
 
 --------------------------------------------------------------------------------
@@ -267,57 +231,38 @@ require("telescope").setup({
 
 require("telescope").load_extension("rest")
 
----- Lua Line
-require("lualine").setup({
-	options = {
-		icons_enabled = true,
-		section_separators = "",
-		component_separators = "",
-	},
-  winbar = {
-    lualine_a = { 
-      {
-        'require"nvim-web-devicons".get_icon( vim.fn.expand("%:t"), vim.fn.expand("%:e"), { default = true })',
-        color = "lualine_a_replace",
-        separator = { left = "%#Character#"},
-        right_padding = 2 
-      }
-    },
-    lualine_b = {
-      { 
-        "filename",
-        path = 1,
-        color = "lualine_a_replace",
-      }, 
-    },
-		lualine_c = { 
-      { 
-        "require'nvim-navic'.get_location()",
-        color = "lualine_a_replace",
-      }
-    },
-    lualine_z = {
-      { 
-        "vim.fn.expand(' ')",
-        separator = { right = "%#Character#" }, 
-        color = "lualine_a_replace",
-        draw_empty = true, 
-        right_padding = 2 
-      },
-    },	
-  },
-	sections = {
-    lualine_a = {
-      { "mode", separator = { left = "%#NormalNC#" }, right_padding = 2 },
-    },
-    lualine_z = {
-      { "mode", separator = { right = "%#NormalNC#" }, right_padding = 2 },
-    },	
-   },
-})
-
 ---- Treesitter
-require("nvim-treesitter.configs").setup({ highlight = { enable = true } })
+require("nvim-treesitter.configs").setup({
+	ensure_installed = {
+		"bash",
+		"c",
+		"comment",
+		"css",
+		"dockerfile",
+		"html",
+		"http",
+		"javascript",
+		"jinja",
+		"jinja_inline",
+		"jsdoc",
+		"json",
+		"jsonc",
+		"lua",
+		"make",
+		"markdown",
+		"python",
+		"regex",
+		"scss",
+		"sql",
+		"toml",
+		"typescript",
+		"vue",
+		"yaml",
+		"zig",
+		-- "mojo",
+	},
+	highlight = { enable = true },
+})
 
 ---- Leap
 require("leap").add_default_mappings()
@@ -327,62 +272,7 @@ require("Comment").setup()
 
 ---- GPS
 require("nvim-navic").setup({
-  lsp = { auto_attach = true }
-})
-
----- GIT Signs
-require("gitsigns").setup({
-	current_line_blame = true,
-	on_attach = function(bufnr)
-		local gs = package.loaded.gitsigns
-
-		local function map(mode, l, r, opts)
-			opts = opts or {}
-			opts.buffer = bufnr
-			vim.keymap.set(mode, l, r, opts)
-		end
-
-		-- Navigation
-		map("n", "]c", function()
-			if vim.wo.diff then
-				return "]c"
-			end
-			vim.schedule(function()
-				gs.next_hunk()
-			end)
-			return "<Ignore>"
-		end, { desc = "Git next hunk", expr = true })
-
-		map("n", "[c", function()
-			if vim.wo.diff then
-				return "[c"
-			end
-			vim.schedule(function()
-				gs.prev_hunk()
-			end)
-			return "<Ignore>"
-		end, { desc = "Git prev hunk", expr = true })
-
-		-- Actions
-		map({ "n", "v" }, "<LEADER>gs", ":Gitsigns stage_hunk<CR>", { desc = "Stage hunk" })
-		map({ "n", "v" }, "<LEADER>gr", ":Gitsigns reset_hunk<CR>", { desc = "Reset hunk" })
-		map("n", "<LEADER>gS", gs.stage_buffer, { desc = "Stage buffer" })
-		map("n", "<LEADER>gu", gs.undo_stage_hunk, { desc = "Undo stage hunk" })
-		map("n", "<LEADER>gR", gs.reset_buffer, { desc = "Reset buffer" })
-		map("n", "<LEADER>gp", gs.preview_hunk, { desc = "Preview hunk" })
-		map("n", "<LEADER>gb", function()
-			gs.blame_line({ full = true })
-		end, { desc = "Show blame for current line" })
-		map("n", "<LEADER>tb", gs.toggle_current_line_blame, { desc = "Toggle line blame" })
-		map("n", "<LEADER>gd", gs.diffthis, { desc = "Diff this" })
-		map("n", "<LEADER>gD", function()
-			gs.diffthis("~")
-		end, { desc = "Diff ???" })
-		map("n", "<LEADER>td", gs.toggle_deleted, { desc = "Toggle deleted lines" })
-
-		-- Text object
-		map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = "Select inside hunk" })
-	end,
+	lsp = { auto_attach = true },
 })
 
 ---- Dev icons
@@ -411,13 +301,14 @@ require("symbols-outline").setup()
 require("user.cmp")
 
 ---- Formatting and Linting
-require("user.null-ls")
+-- require("user.null-ls")
 
 -- Setup language servers.
-local lspconfig = require('lspconfig')
-lspconfig.pyright.setup {}
-lspconfig.ts_ls.setup {}
-lspconfig.vuels.setup {}
+local lspconfig = require("lspconfig")
+lspconfig.pyright.setup({})
+lspconfig.ts_ls.setup({})
+lspconfig.vuels.setup({})
+lspconfig.mojo.setup({})
 -- lspconfig.rust_analyzer.setup {
 --   -- Server-specific settings. See `:help lspconfig-setup`
 --   settings = {
@@ -425,7 +316,8 @@ lspconfig.vuels.setup {}
 --   },
 -- }
 
-
+local harpoon = require("harpoon")
+harpoon:setup()
 
 --------------------------------------------------------------------------------
 -- Key bindings/ mappings
@@ -433,18 +325,30 @@ lspconfig.vuels.setup {}
 ---- WhichKey
 local whichkey = require("which-key")
 whichkey.setup()
-whichkey.register({
-  ["<leader>"] = {  
-    f = {name = "Find"},
-    r = {name = "Rip Grep"},
-    t = {name = "Toggle options"},
-    l = {name = "LSP"},
-    n = {name = "Network"},
-    g = {name = "Git"},
-    [" "] = {name = "Camel Case Motions"},
-  }
+whichkey.add({
+	{ "<leader> ", group = "Camel Case Motions" },
+	{ "<leader>d", group = "Delete" },
+	{ "<leader>e", group = "Tree" },
+	{ "<leader>h", group = "Harpoon" },
+	{ "<leader>f", group = "Find" },
+	{ "<leader>g", group = "Git" },
+	{ "<leader>l", group = "LSP" },
+	{ "<leader>n", group = "Network" },
+	{ "<leader>r", group = "Rip Grep" },
+	{ "<leader>t", group = "Toggle options" },
 })
 
+-- {
+--   ["<leader>"] = {
+--     f = {name = "Find"},
+--     r = {name = "Rip Grep"},
+--     t = {name = "Toggle options"},
+--     l = {name = "LSP"},
+--     n = {name = "Network"},
+--     g = {name = "Git"},
+--     [" "] = {name = "Camel Case Motions"},
+--   }
+-- }
 --------------------------------------------------------------------------------
 -- Ex. Keymap
 --
@@ -459,8 +363,37 @@ whichkey.register({
 local def_opt = { remap = false }
 local map = vim.keymap.set
 
-map("n", "<C-s>", ":w<CR>", { desc="Save file", remap=false })
-map("i", "<C-s>", "<ESC>:w<CR>a", { desc="Save file", remap=false })
+---- Harpoon
+map("n", "<leader>ha", function()
+	harpoon:list():add()
+end, def_opt)
+map("n", "<leader>he", function()
+	harpoon.ui:toggle_quick_menu(harpoon:list())
+end, def_opt)
+-- Toggle previous & next buffers stored within Harpoon list
+map("n", "<leader>hh", function()
+	harpoon:list():select(1)
+end, def_opt)
+map("n", "<leader>hj", function()
+	harpoon:list():select(2)
+end, def_opt)
+map("n", "<leader>hk", function()
+	harpoon:list():select(3)
+end, def_opt)
+map("n", "<leader>hl", function()
+	harpoon:list():select(4)
+end, def_opt)
+
+-- Toggle previous & next buffers stored within Harpoon list
+map("n", "<leader>hp", function()
+	harpoon:list():prev()
+end, def_opt)
+map("n", "<leader>hn", function()
+	harpoon:list():next()
+end, def_opt)
+
+map("n", "<C-s>", ":w<CR>", { desc = "Save file", remap = false })
+map("i", "<C-s>", "<ESC>:w<CR>a", { desc = "Save file", remap = false })
 map("i", "jk", "<ESC>", def_opt)
 map("v", "jk", "<ESC>", def_opt)
 
@@ -469,20 +402,22 @@ map("n", ":", "q:i", def_opt)
 map("v", ":", "q:i", def_opt)
 map("n", "q:", ":", def_opt)
 
+-- Delete without mangling registers etc.
+map("v", "p", '"_dP', def_opt)
+map("n", "x", '"_x', def_opt)
+map("n", "<LEADER>dd", '"_d', { desc = "Delete without mangling regs", noremap = true })
+map("n", "<LEADER>dc", '"_d', { desc = "Change without mangling regs", noremap = true })
+map("n", "<LEADER>dt", ":%s/\\s\\+$/<CR>", { desc = "Remove trailing spaces", noremap = true })
+
 -- Stay in indent mode
 map("v", "<", "<gv", def_opt)
 map("v", ">", ">gv", def_opt)
 
 -- Move text up and down
-map("v", "<A-j>", ":m .+1<CR>==", def_opt)
-map("v", "<A-k>", ":m .-2<CR>==", def_opt)
-map("v", "p", '"_dP', def_opt)
-
--- Move text up and down
 map("x", "J", ":move '>+1<CR>gv-gv", def_opt)
 map("x", "K", ":move '<-2<CR>gv-gv", def_opt)
-map("x", "<A-j>", ":move '>+1<CR>gv-gv", def_opt)
-map("x", "<A-k>", ":move '<-2<CR>gv-gv", def_opt)
+-- map("x", "<A-j>", ":move '>+1<CR>gv-gv", def_opt)
+-- map("x", "<A-k>", ":move '<-2<CR>gv-gv", def_opt)
 
 -- Remap * to search for selection when in visual mode, how is this not default behavior ?!
 map("v", "*", '"xy/<C-R>x<CR>')
@@ -498,18 +433,17 @@ map("t", "<C-k>", "<C-\\><C-n><C-w>k", def_opt)
 map("t", "<C-l>", "<C-\\><C-n><C-w>l", def_opt)
 map("t", "<C-h>", "<C-\\><C-n><C-w>h", def_opt)
 
----- Split term
-map("n", "ttt", ":ToggleTerminalSplit<CR>", { desc="Toggle terminal split", remap=false })
-map("t", "ttt", "<C-\\><C-n><C-w>:ToggleTerminalSplit<CR>", def_opt)
-
 ---- Fix C-j, C-k in drop downs
 map("i", "<C-j>", 'pumvisible() ? "\\<C-n>" : "\\<C-j>"', { expr = true, noremap = true })
 map("i", "<C-k>", 'pumvisible() ? "\\<C-p>" : "\\<C-k>"', { expr = true, noremap = true })
 
 ---- Toggle stuff
-map("n", "<LEADER>ts", ":set spell!<CR>", { desc="Toggle spelling", noremap = true})
-map("n", "<LEADER>th", ":noh<CR>", { desc="Clear search highlight", remap=false })
-map("n", "<LEADER>tt", utils.toggle_bg, { desc="Toggle BG", remap=false })
+map("n", "<LEADER>ts", ":set spell!<CR>", { desc = "Toggle spelling", noremap = true })
+map("n", "<LEADER>th", ":noh<CR>", { desc = "Clear search highlight", remap = false })
+map("n", "<LEADER>tb", utils.toggle_bg, { desc = "Toggle BG", remap = false })
+-- Split term
+map("n", "tt", ":ToggleTerminalSplit<CR>", { desc = "Toggle terminal split", remap = false })
+map("t", "tt", "<C-\\><C-n><C-w>:ToggleTerminalSplit<CR>", def_opt)
 
 ---- Buffer nav
 map("n", "H", ":bp<CR>", def_op)
@@ -524,20 +458,20 @@ map("n", "<LEADER>fh", t_builtin.help_tags, { desc = "Find help tags", noremap =
 map("n", "<LEADER>fs", utils.grep_in_blob, { desc = "Grep string restricted to path blob", noremap = true })
 map("n", "<LEADER>fr", t_builtin.resume, { desc = "Resume previous find", noremap = true })
 map("n", "<LEADER>fo", t_builtin.oldfiles, { desc = "Find recently opened file", noremap = true })
+map("n", "<LEADER>fd", t_builtin.diagnostics, { desc = "Code diagnostics", noremap = true })
 -- Quick telescope.live_grep search from whats in the buffer search register
-map("n", "<LEADER>f*", utils.grep_on_search_register, { desc = "Grep on value in search register", noremap = true})
+map("n", "<LEADER>f*", utils.grep_on_search_register, { desc = "Grep on value in search register", noremap = true })
 
 ---- Filetree
-map("n", "<LEADER>e", ":Neotree<CR>", { desc="Open file tree", remap=false })
-
+map("n", "<LEADER>ee", ":Neotree toggle<CR>", { desc = "Open file tree", remap = false })
+map("n", "<leader>er", "<Cmd>Neotree reveal<CR>")
 ---- Grepping
 map("n", "<LEADER>rg", ":Rg<CR>", { desc = "Grep ask for input", noremap = true })
 map("n", "<LEADER>rw", ":Rg *<CR>", { desc = "Grep for word under cursor", noremap = true })
 
-
 ---- LSP Formatting and Diagnostics
 map("n", "<LEADER>lf", function()
-	vim.lsp.buf.format({ timeout_ms = 2000, async = true})
+	vim.lsp.buf.format({ timeout_ms = 2000, async = true })
 end, { desc = "Format buffer", noremap = true })
 map("v", "<LEADER>lf", function()
 	vim.lsp.buf.format({ timeout_ms = 2000, async = true })
@@ -545,54 +479,55 @@ end, { desc = "Format selection", noremap = true })
 
 -- LSP Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-map('n', '<space>le', vim.diagnostic.open_float, { desc = "Open diagnostic float" })
-map('n', '[d', vim.diagnostic.goto_prev, { desc = "Prev diagnostic message" })
-map('n', ']d', vim.diagnostic.goto_next, { desc = "Next diagnostic message" })
-map('n', '<space>lq', vim.diagnostic.setloclist, { desc = "Send diagnostic messages to location list" })
+map("n", "<space>le", vim.diagnostic.open_float, { desc = "Open diagnostic float" })
+map("n", "[d", vim.diagnostic.goto_prev, { desc = "Prev diagnostic message" })
+map("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic message" })
+map("n", "<space>lq", vim.diagnostic.setloclist, { desc = "Send diagnostic messages to location list" })
 
 -- HTTP Requests
-map('n', '<space>nr', '<cmd>Rest run<CR>', { desc = "HTTP request execute" })
+map("n", "<space>nr", "<cmd>Rest run<CR>", { desc = "HTTP request execute" })
+map("n", "<space>ne", "<cmd>Telescope rest select_env<CR>", { desc = "Select env. file for request" })
 
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
-vim.api.nvim_create_autocmd('LspAttach', {
-  group = vim.api.nvim_create_augroup('UserLspConfig', {}),
-  callback = function(ev)
-    -- Enable completion triggered by <c-x><c-o>
-    vim.bo[ev.buf].omnifunc = 'v:lua.vim.lsp.omnifunc'
+vim.api.nvim_create_autocmd("LspAttach", {
+	group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+	callback = function(ev)
+		-- Enable completion triggered by <c-x><c-o>
+		vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
 
-    -- Buffer local mappings.
-    -- See `:help vim.lsp.*` for documentation on any of the below functions
-    local opts = { buffer = ev.buf }
-    opts["desc"] = "Goto declaration"
-    map('n', 'gD', vim.lsp.buf.declaration, opts)
-    opts["desc"] = "Goto definition"
-    map('n', 'gd', vim.lsp.buf.definition, opts)
-    opts["desc"] = "Goto implementation"
-    map('n', 'gi', vim.lsp.buf.implementation, opts)
-    opts["desc"] = "Goto references"
-    map('n', 'gr', vim.lsp.buf.references, opts)
+		-- Buffer local mappings.
+		-- See `:help vim.lsp.*` for documentation on any of the below functions
+		local opts = { buffer = ev.buf, noremap = true }
+		opts["desc"] = "Goto declaration"
+		map("n", "gD", vim.lsp.buf.declaration, opts)
+		opts["desc"] = "Goto definition"
+		map("n", "gd", vim.lsp.buf.definition, opts)
+		opts["desc"] = "Goto implementation"
+		map("n", "gi", vim.lsp.buf.implementation, opts)
+		opts["desc"] = "Goto references"
+		map("n", "gr", vim.lsp.buf.references, opts)
 
-    opts["desc"] = "Hover docs"
-    map('n', 'K', vim.lsp.buf.hover, opts)
-    opts["desc"] = "Signature help"
-    map('n', '<C-k>', vim.lsp.buf.signature_help, opts)
+		opts["desc"] = "Hover docs"
+		map("n", "K", vim.lsp.buf.hover, opts)
+		opts["desc"] = "Signature help"
+		map("n", "<C-k>", vim.lsp.buf.signature_help, opts)
 
-    opts["desc"] = "Add workspace folder"
-    map('n', '<space>lwa', vim.lsp.buf.add_workspace_folder, opts)
-    opts["desc"] = "Remove workspace folder"
-    map('n', '<space>lwr', vim.lsp.buf.remove_workspace_folder, opts)
-    opts["desc"] = "List workspace folders"
-    map('n', '<space>lwl', function()
-      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-    end, opts)
+		opts["desc"] = "Add workspace folder"
+		map("n", "<space>lwa", vim.lsp.buf.add_workspace_folder, opts)
+		opts["desc"] = "Remove workspace folder"
+		map("n", "<space>lwr", vim.lsp.buf.remove_workspace_folder, opts)
+		opts["desc"] = "List workspace folders"
+		map("n", "<space>lwl", function()
+			print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+		end, opts)
 
-    opts["desc"] = "Type definition"
-    map('n', '<space>lD', vim.lsp.buf.type_definition, opts)
-    opts["desc"] = "Rename symbol"
-    map('n', '<space>lr', vim.lsp.buf.rename, opts)
-    opts["desc"] = "Code action"
-    map('n', '<space>lc', vim.lsp.buf.code_action, opts)
-    opts["desc"] = nil
-  end,
+		opts["desc"] = "Type definition"
+		map("n", "<space>lD", vim.lsp.buf.type_definition, opts)
+		opts["desc"] = "Rename symbol"
+		map("n", "<space>lr", vim.lsp.buf.rename, opts)
+		opts["desc"] = "Code action"
+		map("n", "<space>lc", vim.lsp.buf.code_action, opts)
+		opts["desc"] = nil
+	end,
 })
