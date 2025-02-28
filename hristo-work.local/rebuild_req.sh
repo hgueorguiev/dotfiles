@@ -12,3 +12,5 @@ brew install yazi
 brew install neovim
 brew install kitty
 brew install git-delta
+brew install gitleaks
+git clone  git@github.com:Johnson468/Stay-Awake.git ~/.local/share/Stay-Awake 
