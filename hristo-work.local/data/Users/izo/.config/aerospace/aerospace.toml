@@ -93,6 +93,24 @@ outer.right =      0
 #     activate
 # end tell'
 # '''
+alt-enter = '''exec-and-forget osascript -e '
+on is_running(appName)
+	tell application "System Events" to (name of processes) contains appName
+end is_running
+
+if not is_running("kitty") then
+	tell application "kitty" to activate
+else
+	tell application "System Events" to tell process "kitty"
+		click menu item "New OS Window" of menu 1 of menu bar item "Shell" of menu bar 1
+	end tell
+end if'
+'''
+
+alt-shift-p = '''exec-and-forget osascript -e ' tell application "KeePassium" to activate' '''
+alt-shift-t = '''exec-and-forget osascript -e ' tell application "kitty" to activate' '''
+alt-shift-f = '''exec-and-forget open -a "kitty" /Users/izo/.config/aerospace/cmds/yazi.sh '''
+alt-shift-w = '''exec-and-forget open -a "kitty" /Users/izo/.config/aerospace/cmds/wake.zsh '''
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#layout
 alt-slash = 'layout tiles horizontal vertical'
@@ -113,6 +131,8 @@ alt-shift-l = 'move right'
 # See: https://nikitabobko.github.io/AeroSpace/commands#resize
 alt-shift-minus = 'resize smart -50'
 alt-shift-equal = 'resize smart +50'
+alt-shift-0 = 'balance-sizes'
+alt-shift-9 = 'fullscreen'
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#workspace
 alt-1 = 'workspace 1'
@@ -217,3 +237,8 @@ shift-down = ['volume set 0', 'mode main']
 [[on-window-detected]]
     if.app-id = 'com.apple.Notes'
     run = 'layout floating'
+
+[[on-window-detected]]
+    if.app-id = 'us.zoom.xos'
+    run = 'layout floating'
+

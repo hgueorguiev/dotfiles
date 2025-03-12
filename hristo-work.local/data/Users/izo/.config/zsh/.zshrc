@@ -1,27 +1,34 @@
-echo "Shell initializing ..." | lolcat
+function log() {
+  if [[ $NO_MORE_LOGGING != true ]] || [[ $2 == true ]] ; then
+    echo $1 | lolcat
+  fi
+}
+
+log "Shell initializing ..."
 # Enable vi mode
 bindkey -v
 
 ## jk to esc  
 bindkey -M viins 'jk' vi-cmd-mode
 
-echo "Enable VI mode ..." | lolcat
+log "Enable VI mode ..."
 # Shell PATH
 export PATH=$HOME/.local/bin:$PATH   # Add usr utils path
 export PATH="$HOME/.pyenv/bin:$PATH" # Add PyEnv path
-export PATH="$HOME/.modular/bin:$PATH" # Add PyEnv path
+export PATH="$HOME/.modular/bin:$PATH" # Add Modular (Mojo) path
+export PATH="/opt/homebrew/opt/llvm/bin:$PATH" # Add LLVM path
 
-echo "Setup paths ..." | lolcat
+log "Setup paths ..."
 
 # Initialize PyEnv python version manager
 eval "$(pyenv init -)"
-echo "Pyenv init ..." | lolcat
+log "Pyenv init ..."
 
 # Initialize NVM
 export NVM_DIR="$HOME/.local/share/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-echo "NVM init ..." | lolcat
+log "NVM init ..."
 
 # Load shell modules and helpers
 autoload -U colors && colors
@@ -33,11 +40,11 @@ setopt AUTO_PUSHD
 setopt prompt_subst
 export PROMPT=$'\n'"%F{129}%f%K{129} %m %k%F{129}%K{135}%k%f%K{135}%B %~ %b%k%K{141}%F{135}%f %t %k%F{141}%f"$'\n🚀 '
 export RPROMPT='${vcs_info_msg_0_}'
-echo "Setup prompt ..." | lolcat
+log "Setup prompt ..."
 
 # Configure history
 bindkey -v
-bindkey '^R' history-incremental-search-backward
+# bindkey '^R' history-incremental-search-backward # Disable, use Atuin instead
 
 export HISTSIZE=100000
 export HISTFILESIZE=100000
@@ -46,7 +53,7 @@ setopt HIST_FIND_NO_DUPS
 setopt HIST_IGNORE_ALL_DUPS
 export LESSHISTFILE="$HOME/.cache/.lesshst"
 export SHELL_SESSIONS_DISABLE=1
-echo "Configure history ..." | lolcat
+log "Configure history ..."
 
 # Git status shell integration
 autoload -Uz vcs_info
@@ -72,19 +79,29 @@ function +vi-home-path() {
 precmd() {
     vcs_info
 }
-echo "Setup git integration ..." | lolcat
+
+source $HOME/.config/zsh/atuin.zsh
+log "Atuin init ..."
+
+source $HOME/.config/zsh/git.zsh
+log "Setup git integration ..."
 
 # Setup completion
 source $HOME/.config/zsh/completion.zsh
-echo "Setup shell completions ..." | lolcat
+log "Setup shell completions ..."
 
 # Load aliases
 source $HOME/.config/zsh/.aliases
-echo "Setup shell command aliases ..." | lolcat
+log "Setup shell command aliases ..."
 
 # Load Plugins 
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh # Syntax highlighting
-echo "Shell plugins loaded ...\n" | lolcat
+source $HOME/.config/zsh/google-cloud-sdk.zsh
+log "Shell plugins loaded ...\n"
 
-# gucci rice :(
-neofetch
+if [[ $NO_MORE_LOGGING != true ]] ; then
+  # gucci rice :(
+  neofetch
+fi
+
+export NO_MORE_LOGGING=true

@@ -1,9 +1,33 @@
 [alias]
-  sweep = !git branch --merged main | rg -v '^\\* main|main' ;| xargs git branch -d
+  sweep = !git branch --merged main | rg -v '(^\\* main|main)' | xargs git branch -d
+  apply-personal = !$XDG_CONFIG_HOME/git/apply_personal.sh
+
 [core]
 	editor = nvim
+  pager = delta
+
 [push]
 	autosetupremote = true
 	default = current
+
 [pull]
 	rebase = false
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+  features = arctic-fox
+  navigate = true  # use n and N to move between diff sections
+  dark = true      # or light = true, or omit for auto-detection
+  side-by-side = true
+  ; line-numbers-left-format = ""
+  line-numbers-right-format = "│ "
+
+[include]
+  path = /Users/izo/.config/delta/themes.gitconfig
+
+
+
+[merge]
+    conflictstyle = zdiff3

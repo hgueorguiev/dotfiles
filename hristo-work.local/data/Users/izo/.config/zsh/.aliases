@@ -67,7 +67,7 @@ function edcfg() {
   )
 
   if [[ $1 == $config_types[shell] ]] ; then
-    vi "$HOME/.config/zsh/.zshrc" "$HOME/.zprofile" "$HOME/.config/zsh/.aliases" --cmd "cd $HOME/.config/zsh/"
+    vi "$HOME/.config/zsh/.zshrc" "$HOME/.zshenv" "$HOME/.zprofile" "$HOME/.config/zsh/.aliases" --cmd "cd $HOME/.config"
     return
   fi
 

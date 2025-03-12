@@ -56,6 +56,8 @@ vim.opt.listchars:append({
 vim.opt.list = true
 ---- CamelCaseMotion (Needs to be set before pulgin loads)
 vim.g["camelcasemotion_key"] = "<LEADER><LEADER>"
+---- Error match on trailing whitespace
+vim.cmd([[match errorMsg /\s\+$/]])
 
 --------------------------------------------------------------------------------
 -- Auto commands
@@ -196,6 +198,8 @@ local plugins = {
 	------ Network utils
 	-- HTTP requests
 	require("user.rest"),
+	-- Pulgins in dev mode
+	require("user.dev"),
 	-- Web
 	{
 		"yuratomo/w3m.vim",
@@ -217,6 +221,7 @@ local t_actions = require("telescope.actions")
 require("telescope").setup({
 	pickers = {
 		find_files = {
+			file_ignore_patterns = { "node_modules", ".venv", ".git" },
 			hidden = true,
 		},
 	},
@@ -233,8 +238,18 @@ require("telescope").setup({
 			},
 		},
 	},
+	extensions = {
+		fzf = {
+			fuzzy = true, -- false will only do exact matching
+			override_generic_sorter = true, -- override the generic sorter
+			override_file_sorter = true, -- override the file sorter
+			case_mode = "smart_case", -- or "ignore_case" or "respect_case"
+			-- the default case_mode is "smart_case"
+		},
+	},
 })
 
+require("telescope").load_extension("fzf")
 require("telescope").load_extension("rest")
 
 ---- Treesitter
@@ -414,6 +429,7 @@ map("n", "x", '"_x', def_opt)
 map("n", "<LEADER>dd", '"_d', { desc = "Delete without mangling regs", noremap = true })
 map("n", "<LEADER>dc", '"_d', { desc = "Change without mangling regs", noremap = true })
 map("n", "<LEADER>dt", ":%s/\\s\\+$/<CR>", { desc = "Remove trailing spaces", noremap = true })
+map("n", "<LEADER>db", ":bd!<CR>", { desc = "Delete buffer and lose all unsaved content", noremap = true })
 
 -- Stay in indent mode
 map("v", "<", "<gv", def_opt)

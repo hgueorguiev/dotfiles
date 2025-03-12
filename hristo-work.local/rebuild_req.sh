@@ -9,8 +9,11 @@ brew install fzf
 brew install lsd
 brew install bat
 brew install yazi
+brew install btop
 brew install neovim
 brew install kitty
 brew install git-delta
 brew install gitleaks
+brew install tldr
 git clone  git@github.com:Johnson468/Stay-Awake.git ~/.local/share/Stay-Awake 
+brew install atuin

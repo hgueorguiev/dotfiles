@@ -6,7 +6,7 @@ return {
 				icons_enabled = true,
 				section_separators = "",
 				component_separators = "",
-				disabled_filetypes = { "alpha", "neo-tree", "vim" },
+				disabled_filetypes = { "alpha", "neo-tree", "vim", "qf" },
 			},
 			winbar = {
 				lualine_a = {
