@@ -86,7 +86,12 @@ log "Atuin init ..."
 source $HOME/.config/zsh/git.zsh
 log "Setup git integration ..."
 
+# Initialize Rust cargo
+source /Users/izo/.local/share/cargo/env
+log "Cargo(Rust) init ..."
+
 # Setup completion
+fpath=(/Users/izo/.docker/completions $fpath)
 source $HOME/.config/zsh/completion.zsh
 log "Setup shell completions ..."
 

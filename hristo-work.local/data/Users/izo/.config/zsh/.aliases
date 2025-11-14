@@ -41,6 +41,9 @@ alias gs="git status"
 # Power CAT
 alias cat=bat
 
+# Better stats
+alias top=btop
+
 # VIM
 alias vi-classic=/usr/bin/vi
 alias vim=nvim

@@ -128,6 +128,7 @@ local plugins = {
 		-- tag = "0.1.8",
 		dependencies = {
 			{ "nvim-lua/plenary.nvim" },
+      { "nvim-telescope/telescope-live-grep-args.nvim" },
 		},
 	},
 	"duane9/nvim-rg", -- RipGrep
@@ -218,6 +219,7 @@ local return_code, t_builtin = pcall(require, "telescope.builtin")
 --------------------------------------------------------------------------------
 ---- Telescope
 local t_actions = require("telescope.actions")
+local lga_actions = require("telescope-live-grep-args.actions")
 require("telescope").setup({
 	pickers = {
 		find_files = {
@@ -246,11 +248,30 @@ require("telescope").setup({
 			case_mode = "smart_case", -- or "ignore_case" or "respect_case"
 			-- the default case_mode is "smart_case"
 		},
+  live_grep_args = {
+      auto_quoting = true, -- enable/disable auto-quoting
+      -- define mappings, e.g.
+      mappings = { -- extend mappings
+        i = {
+          ["<C-'>"] = lga_actions.quote_prompt(),
+          ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
+          -- freeze the current list and start a fuzzy search in the frozen list
+          ["<C-space>"] = lga_actions.to_fuzzy_refine,
+        },
+      },
+      -- ... also accepts theme settings, for example:
+      -- theme = "dropdown", -- use dropdown theme
+      -- theme = { }, -- use own theme spec
+      -- layout_config = { mirror=true }, -- mirror preview pane
+    }
 	},
 })
 
+require("telescope").load_extension("live_grep_args")
 require("telescope").load_extension("fzf")
 require("telescope").load_extension("rest")
+
+local t_extensions = require("telescope").extensions
 
 ---- Treesitter
 require("nvim-treesitter.configs").setup({
@@ -273,6 +294,7 @@ require("nvim-treesitter.configs").setup({
 		"markdown",
 		"python",
 		"regex",
+    "rust",
 		"scss",
 		"sql",
 		"toml",
@@ -286,7 +308,7 @@ require("nvim-treesitter.configs").setup({
 })
 
 ---- Leap
-require("leap").add_default_mappings()
+-- require("leap").add_default_mappings()
 
 ---- Comment
 require("Comment").setup()
@@ -321,22 +343,32 @@ require("symbols-outline").setup()
 ---- Completion & Snippets
 require("user.cmp")
 
----- Formatting and Linting
--- require("user.null-ls")
-
 -- Setup language servers.
-local lspconfig = require("lspconfig")
-lspconfig.pyright.setup({})
-lspconfig.ts_ls.setup({})
-lspconfig.vuels.setup({})
-lspconfig.mojo.setup({})
--- lspconfig.rust_analyzer.setup {
---   -- Server-specific settings. See `:help lspconfig-setup`
---   settings = {
---     ['rust-analyzer'] = {},
---   },
--- }
+local lsp_servers = {
+  pyright = {},
+  ts_ls = {},
+  vuels = {},
+  mojo = {},
+  rust_analyzer = {
+    settings = {
+        ['rust-analyzer'] = {
+            check = {
+                command = "clippy";
+            },
+            diagnostics = {
+                enable = true;
+            }
+        }
+    }
+  },
+}
 
+for server, config in pairs(lsp_servers) do
+  vim.lsp.config(server, config)
+  vim.lsp.enable(server)
+end
+
+----Nav. buffers
 local harpoon = require("harpoon")
 harpoon:setup()
 
@@ -357,6 +389,7 @@ whichkey.add({
 	{ "<leader>n", group = "Network" },
 	{ "<leader>r", group = "Rip Grep" },
 	{ "<leader>t", group = "Toggle options" },
+	{ "<leader>w", group = "Window" },
 })
 
 -- {
@@ -384,6 +417,7 @@ whichkey.add({
 local def_opt = { remap = false }
 local map = vim.keymap.set
 
+------Nav
 ---- Harpoon
 map("n", "<leader>ha", function()
 	harpoon:list():add()
@@ -413,8 +447,48 @@ map("n", "<leader>hn", function()
 	harpoon:list():next()
 end, def_opt)
 
+---- Leap.nvim
+map({'n', 'x', 'o'}, 's', '<Plug>(leap)')
+map('n', 'S', '<Plug>(leap-from-window)')
+
+---- Window nav
+map("n", "<C-j>", "<C-w>j", def_opt)
+map("n", "<C-k>", "<C-w>k", def_opt)
+map("n", "<C-l>", "<C-w>l", def_opt)
+map("n", "<C-h>", "<C-w>h", def_opt)
+
+map("t", "<C-j>", "<C-\\><C-n><C-w>j", def_opt)
+map("t", "<C-k>", "<C-\\><C-n><C-w>k", def_opt)
+map("t", "<C-l>", "<C-\\><C-n><C-w>l", def_opt)
+map("t", "<C-h>", "<C-\\><C-n><C-w>h", def_opt)
+
+---- Fix C-j, C-k in drop downs
+map("i", "<C-j>", 'pumvisible() ? "\\<C-n>" : "\\<C-j>"', { expr = true, noremap = true })
+map("i", "<C-k>", 'pumvisible() ? "\\<C-p>" : "\\<C-k>"', { expr = true, noremap = true })
+
+---- Buffer nav
+map("n", "H", ":bp<CR>", def_op)
+map("n", "L", ":bn<CR>", def_op)
+map("n", "<LEADER>c", ":bd<CR>", { desc = "Close buffer", noremap = true })
+------Nav END
+
+---- Common
+-- Window splits
+map("n", "<LEADER>wv", ":vsp<CR>", { desc = "Vertical split", noremap = true })
+map("n", "<LEADER>wh", ":sp<CR>", { desc = "Horizontal split", noremap = true })
+map("n", "<LEADER>wc", ":clo<CR>", { desc = "Close window", noremap = true })
+--
+-- Window sizing
+map("n", "<C-->", ":resize -5<CR>", def_opt)
+map("n", "<C-=>", ":resize +5<CR>", def_opt)
+map("n", "<C-,>", ":vertical resize -5<CR>", def_opt)
+map("n", "<C-.>", ":vertical resize +5<CR>", def_opt)
+
+-- Save
 map("n", "<C-s>", ":w<CR>", { desc = "Save file", remap = false })
 map("i", "<C-s>", "<ESC>:w<CR>a", { desc = "Save file", remap = false })
+
+-- Remap esc
 map("i", "jk", "<ESC>", def_opt)
 map("v", "jk", "<ESC>", def_opt)
 
@@ -444,21 +518,6 @@ map("x", "K", ":move '<-2<CR>gv-gv", def_opt)
 -- Remap * to search for selection when in visual mode, how is this not default behavior ?!
 map("v", "*", '"xy/<C-R>x<CR>')
 
----- Window nav
-map("n", "<C-j>", "<C-w>j", def_opt)
-map("n", "<C-k>", "<C-w>k", def_opt)
-map("n", "<C-l>", "<C-w>l", def_opt)
-map("n", "<C-h>", "<C-w>h", def_opt)
-
-map("t", "<C-j>", "<C-\\><C-n><C-w>j", def_opt)
-map("t", "<C-k>", "<C-\\><C-n><C-w>k", def_opt)
-map("t", "<C-l>", "<C-\\><C-n><C-w>l", def_opt)
-map("t", "<C-h>", "<C-\\><C-n><C-w>h", def_opt)
-
----- Fix C-j, C-k in drop downs
-map("i", "<C-j>", 'pumvisible() ? "\\<C-n>" : "\\<C-j>"', { expr = true, noremap = true })
-map("i", "<C-k>", 'pumvisible() ? "\\<C-p>" : "\\<C-k>"', { expr = true, noremap = true })
-
 ---- Toggle stuff
 map("n", "<LEADER>ts", ":set spell!<CR>", { desc = "Toggle spelling", noremap = true })
 map("n", "<LEADER>th", ":noh<CR>", { desc = "Clear search highlight", remap = false })
@@ -467,14 +526,10 @@ map("n", "<LEADER>tb", utils.toggle_bg, { desc = "Toggle BG", remap = false })
 map("n", "tt", ":ToggleTerminalSplit<CR>", { desc = "Toggle terminal split", remap = false })
 map("t", "tt", "<C-\\><C-n><C-w>:ToggleTerminalSplit<CR>", def_opt)
 
----- Buffer nav
-map("n", "H", ":bp<CR>", def_op)
-map("n", "L", ":bn<CR>", def_op)
-map("n", "<LEADER>c", ":bd<CR>", { desc = "Close buffer", noremap = true })
-
 ---- Telescope
 map("n", "<LEADER>ff", t_builtin.find_files, { desc = "Find file", noremap = true })
 map("n", "<LEADER>fw", t_builtin.live_grep, { desc = "Grep string", noremap = true })
+map("n", "<LEADER>fW", t_extensions.live_grep_args.live_grep_args, { desc = "Grep string, allow extra args.", noremap = true })
 map("n", "<LEADER>fb", t_builtin.buffers, { desc = "Find open buffer", noremap = true })
 map("n", "<LEADER>fh", t_builtin.help_tags, { desc = "Find help tags", noremap = true })
 map("n", "<LEADER>fs", utils.grep_in_blob, { desc = "Grep string restricted to path blob", noremap = true })
@@ -502,8 +557,8 @@ end, { desc = "Format selection", noremap = true })
 -- LSP Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 map("n", "<space>le", vim.diagnostic.open_float, { desc = "Open diagnostic float" })
-map("n", "[d", vim.diagnostic.goto_prev, { desc = "Prev diagnostic message" })
-map("n", "]d", vim.diagnostic.goto_next, { desc = "Next diagnostic message" })
+map("n", "<space>lp", vim.diagnostic.goto_prev, { desc = "Prev diagnostic message" })
+map("n", "<space>ln", vim.diagnostic.goto_next, { desc = "Next diagnostic message" })
 map("n", "<space>lq", vim.diagnostic.setloclist, { desc = "Send diagnostic messages to location list" })
 
 -- HTTP Requests

@@ -1,0 +1,16 @@
+[application]
+DefaultPageSize = 300
+DisableSidebar = false
+SidebarOverlay = false
+
+[[database]]
+Name = 'notedsource'
+URL = 'mysql://api:mZaBq65tQMqj-D@localhost:3306/notedsource'
+Provider = 'mysql'
+Username = ''
+Password = ''
+Hostname = ''
+Port = ''
+DBName = 'notedsource'
+URLParams = ''
+Commands = []

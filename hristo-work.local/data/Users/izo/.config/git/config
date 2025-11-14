@@ -30,4 +30,5 @@
 
 
 [merge]
-    conflictstyle = zdiff3
+  tool = vimdiff
+  conflictstyle = zdiff3
