@@ -561,6 +561,9 @@ map("n", "<space>lp", vim.diagnostic.goto_prev, { desc = "Prev diagnostic messag
 map("n", "<space>ln", vim.diagnostic.goto_next, { desc = "Next diagnostic message" })
 map("n", "<space>lq", vim.diagnostic.setloclist, { desc = "Send diagnostic messages to location list" })
 
+-- Other code commands
+map("n", "<space>lx", ":term make quick_run<CR>", { desc = "Quick run project code" })
+
 -- HTTP Requests
 map("n", "<space>nr", "<cmd>Rest run<CR>", { desc = "HTTP request execute" })
 map("n", "<space>ne", "<cmd>Telescope rest select_env<CR>", { desc = "Select env. file for request" })
