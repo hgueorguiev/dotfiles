@@ -1,3 +1,4 @@
 gcloud/
 .zsh_history
 .zsh_sessions
+**/rclone

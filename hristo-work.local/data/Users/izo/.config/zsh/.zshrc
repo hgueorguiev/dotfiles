@@ -51,6 +51,7 @@ export HISTFILESIZE=100000
 export HISTFILE="$HOME/.cache/.zhistory"
 setopt HIST_FIND_NO_DUPS
 setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
 export LESSHISTFILE="$HOME/.cache/.lesshst"
 export SHELL_SESSIONS_DISABLE=1
 log "Configure history ..."
