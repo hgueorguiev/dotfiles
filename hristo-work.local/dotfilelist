@@ -1,5 +1,6 @@
 ~/applescpits
 ~/.config
 ~/.local/bin/dump-colors.sh
+~/.local/bin/git-dirty.sh
 ~/.zprofile
 ~/.zshenv
